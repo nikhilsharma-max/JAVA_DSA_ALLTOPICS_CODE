@@ -1,5 +1,17 @@
 import java.util.*;
 public class subTress {
+    public static class InfoNew{
+        boolean isBST;
+        int size;
+        int min;
+        int max;
+        public InfoNew(boolean isBST,int size,int min,int max){
+            this.isBST = isBST;
+            this.size = size;
+            this.min = min;
+            this.max = max;
+        }
+    }
 
     public static class Node{
         int data;
@@ -21,7 +33,6 @@ public class subTress {
             this.hd = hd;
         }
     }
-
 
 
     public static class BinaryTree{
@@ -125,11 +136,13 @@ public class subTress {
 
     //Minimun distance between two nodes
     public static int minDist(Node root,int n1,int n2){
+
         Node lca = lca(root,n1,n2);
         int leftDist = lcaDist(lca,n1);
         int rightDist = lcaDist(lca,n2);
         return leftDist+rightDist;
     }
+
     private static int lcaDist(Node root,int n){
         if(root==null)return -1;
         if(root.data==n)return 0;
@@ -162,6 +175,42 @@ public class subTress {
         preOrder(root.left);
         preOrder(root.right);
     }
+
+    //Build a bst with a given sorted sequence(array)
+    public static Node buildBst(int arr[],int st,int end){
+        //base case
+        if(st>end){
+            return null;
+        }
+        int mid = (st+end)/2;
+        Node root = new Node(arr[mid]);
+        root.left = buildBst(arr, st, mid-1);
+        root.right = buildBst(arr, mid+1, end);
+        return root;
+    }
+   
+   //Size of largest BST in a binary tree
+   public static int maxBST = 0;
+   public static InfoNew largestBST(Node root){
+    //base case
+    if(root==null){
+        return new InfoNew(true, 0, Integer.MAX_VALUE, Integer.MIN_VALUE);
+    }
+    InfoNew leftInfoNew = largestBST(root.left);
+    InfoNew rightInfoNew = largestBST(root.right);
+    int size = leftInfoNew.size+rightInfoNew.size+1;
+    int min = Math.min(root.data,Math.min(leftInfoNew.min,rightInfoNew.min));
+    int max = Math.max(root.data,Math.max(leftInfoNew.max,rightInfoNew.max));
+    if(root.data<=leftInfoNew.max || root.data>=rightInfoNew.min){
+        return new InfoNew(false, size, min, max);
+    }
+    if(leftInfoNew.isBST && rightInfoNew.isBST){
+        maxBST = Math.max(size, maxBST);
+        return  new InfoNew(true, size, min, max);
+    }
+    return new InfoNew(false, size, min, max);
+   }
+
 
     public static void main(String[] args) {
 
@@ -198,8 +247,11 @@ public class subTress {
             System.out.println();
             preOrder(root);
 
+            System.out.println();
+            System.out.println("Build bst using sorted sequence");
+            int arr[] = {3,5,6,8,10,11,12};
+            Node root2 = buildBst(arr, 0, arr.length-1);
+            preOrder(root2);
+
     }
-
-
-
 }

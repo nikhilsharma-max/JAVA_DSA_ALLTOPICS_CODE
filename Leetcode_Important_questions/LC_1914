@@ -1,0 +1,117 @@
+class Solution {
+    public int[][] rotateGrid(int[][] grid, int k) {
+        int rows = grid.length;
+        int cols = grid[0].length;
+
+        int x = 0, y = 0;
+        int m = rows, n = cols;
+
+        while (m > 1 && n > 1) {
+
+            int[] arr = createArray(grid, x, y, m, n);
+
+            int temp = k % (2 * (m + n - 2));
+
+            int[] rotateArray = rotate(arr, temp);
+
+            putInTheGrid(grid, x, y, m, n, rotateArray);
+
+            // move to inner layer
+            x++;
+            y++;
+            m -= 2;
+            n -= 2;
+        }
+
+        return grid;
+    }
+
+    public int[] createArray(int[][] grid, int x, int y, int m, int n) {
+
+        int len = 2 * (m + n - 2);
+        int[] arr = new int[len];
+
+        int count = 0;
+        int startx = x, starty = y;
+
+        for (; x < startx + m; x++) {
+            arr[count++] = grid[x][y];
+        }
+
+        x--;
+        y++;
+
+        for (; y < starty + n; y++) {
+            arr[count++] = grid[x][y];
+        }
+
+        y--;
+        x--;
+
+        for (; x >= startx; x--) {
+            arr[count++] = grid[x][y];
+        }
+
+        x++;
+        y--;
+
+        for (; y > starty; y--) {
+            arr[count++] = grid[x][y];
+        }
+
+        return arr;
+    }
+
+    public int[] rotate(int[] arr, int k) {
+
+        if (k == 0) return arr;
+
+        Queue<Integer> elements = new LinkedList<>();
+
+        for (int i = arr.length - k; i < arr.length; i++) {
+            elements.add(arr[i]);
+        }
+
+        for (int i = arr.length - k - 1; i >= 0; i--) {
+            arr[i + k] = arr[i];
+        }
+
+        for (int i = 0; i < k; i++) {
+            arr[i] = elements.poll();
+        }
+
+        return arr;
+    }
+
+    public void putInTheGrid(int[][] grid, int x, int y, int m, int n, int[] arr) {
+
+        int count = 0;
+
+        int startx = x, starty = y;
+
+        for (; x < startx + m; x++) {
+            grid[x][y] = arr[count++];
+        }
+
+        x--;
+        y++;
+
+        for (; y < starty + n; y++) {
+            grid[x][y] = arr[count++];
+        }
+
+        y--;
+        x--;
+
+        for (; x >= startx; x--) {
+            grid[x][y] = arr[count++];
+        }
+
+        x++;
+        y--;
+
+        for (; y > starty; y--) {
+            grid[x][y] = arr[count++];
+        }
+    }
+}

@@ -1,0 +1,120 @@
+//Best optimized
+
+class Solution {
+    public int minCostConnectPoints(int[][] points) {
+
+        int n = points.length;
+
+        boolean[] visited = new boolean[n];
+
+        int[] dist = new int[n];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+
+        dist[0] = 0;
+
+        int minCost = 0;
+
+        for (int count = 0; count < n; count++) {
+
+            int curr = -1;
+
+            for (int i = 0; i < n; i++) {
+                if (!visited[i] &&
+                   (curr == -1 || dist[i] < dist[curr])) {
+                    curr = i;
+                }
+            }
+
+            visited[curr] = true;
+            minCost += dist[curr];
+
+            for (int i = 0; i < n; i++) {
+
+                if (!visited[i]) {
+
+                    int cost =
+                        Math.abs(points[curr][0] - points[i][0]) +
+                        Math.abs(points[curr][1] - points[i][1]);
+
+                    dist[i] = Math.min(dist[i], cost);
+                }
+            }
+        }
+
+        return minCost;
+    }
+}
+
+
+
+
+//Less optimized but good to understand concept of prim's
+
+class Solution {
+    public class Pair {
+        int dest;
+        int cost;
+
+        public Pair(int dest, int cost) {
+            this.dest = dest;
+            this.cost = cost;
+        }
+    }
+
+    public class Pair2 implements Comparable<Pair2>{
+        int v;
+        int cost;
+        public Pair2(int v,int cost){
+            this.v =v;
+            this.cost = cost;
+        }
+        @Override
+        public int compareTo(Pair2 p2){
+            return this.cost - p2.cost;
+        }
+    }
+    public int minCostConnectPoints(int[][] points) {
+        int V = points.length;
+        // Creating adjacency list for prim's
+        List<List<Pair>> adj = new ArrayList<>();
+
+        for (int i = 0; i < V; i++) {
+            adj.add(new ArrayList<>());
+        }
+
+        for (int i = 0; i < V; i++) {
+
+            for (int j = i + 1; j < V; j++) {
+
+                int x1 = points[i][0];
+                int y1 = points[i][1];
+
+                int x2 = points[j][0];
+                int y2 = points[j][1];
+
+                int dist = Math.abs(x2 - x1) + Math.abs(y2 - y1);
+
+                adj.get(i).add(new Pair(j, dist));
+                adj.get(j).add(new Pair(i, dist)); // for undirected graph
+            }
+        }
+
+        //prim's
+        boolean vis[] = new boolean[V];
+        PriorityQueue<Pair2> pq = new PriorityQueue<>();
+        pq.add(new Pair2(0,0));
+        int finalCost = 0;
+        while(!pq.isEmpty()){
+            Pair2 curr = pq.remove();
+            if(!vis[curr.v]){
+                vis[curr.v] = true;
+                finalCost+=curr.cost;
+                for(int i = 0;i<adj.get(curr.v).size();i++){
+                    Pair neigh = adj.get(curr.v).get(i);
+                    pq.add(new Pair2(neigh.dest,neigh.cost));
+                }
+            }
+        }
+        return finalCost;
+    }
+}

@@ -1,0 +1,39 @@
+class Solution {
+    public int[] countWordOccurrences(String[] chunks, String[] queries) {
+        StringBuilder sb = new StringBuilder("");
+        for(String word : chunks){
+            sb.append(word);
+        }
+        String s = sb.toString();
+        Map<String,Integer> wordCount = new HashMap<>();
+        int n = s.length();
+        int i = 0;
+        while(i<n){
+            if(!isLowerCaseLetter(s.charAt(i))){
+                i++;
+                continue;
+            }
+            int start = i;
+            while(i<n && isLowerCaseLetter(s.charAt(i))){
+                i++;
+            }
+            while(i<n && s.charAt(i)=='-' && i+1<n && isLowerCaseLetter(s.charAt(i+1))){
+                i++;
+                while(i<n && isLowerCaseLetter(s.charAt(i))){
+                    i++;
+                }
+            }
+            String word = s.substring(start,i);
+            wordCount.put(word,wordCount.getOrDefault(word,0)+1);
+            
+        }
+        int ans[] = new int[queries.length];
+        for(int j = 0;j<queries.length;j++){
+            ans[j] = wordCount.getOrDefault(queries[j],0);
+        }
+        return ans;
+    }
+    private boolean isLowerCaseLetter(char c){
+        return c>='a' && c<='z';
+    }
+}

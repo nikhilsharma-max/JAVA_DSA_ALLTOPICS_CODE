@@ -1,0 +1,22 @@
+class Solution {
+    public int maximumJumps(int[] nums, int target) {
+        int n = nums.length;
+        if(n==2 && Math.abs(nums[0]-nums[1])<=target){
+            return 1;
+        }
+        int jumps[] = new int[n];
+        Arrays.fill(jumps,-1);
+        jumps[0] = 0;
+        for(int  i = 1;i<n;i++){
+            for(int j = i-1;j>=0;j--){
+                if(Math.abs(nums[i]-nums[j])<=target){
+                    if(jumps[j]!=-1){
+                        jumps[i] = Math.max(jumps[j]+1,jumps[i]);
+                        continue;
+                    }
+                }
+            }
+        }
+        return jumps[n-1];
+    }
+}

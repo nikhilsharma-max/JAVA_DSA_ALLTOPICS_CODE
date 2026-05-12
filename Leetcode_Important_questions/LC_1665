@@ -1,0 +1,58 @@
+class Solution {
+
+    public class Pair implements Comparable<Pair> {
+        int i;
+        int j;
+
+        public Pair(int i, int j) {
+            this.i = i;
+            this.j = j;
+        }
+
+        @Override
+        public int compareTo(Pair p2) {
+
+            int currDiff = this.j - this.i;
+            int pDiff = p2.j - p2.i;
+            if (pDiff != currDiff) {
+                return pDiff - currDiff;
+            }
+
+            return this.j - p2.j;
+        }
+    }
+
+    public int minimumEffort(int[][] tasks) {
+
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+
+        for (int i = 0; i < tasks.length; i++) {
+            pq.add(new Pair(tasks[i][0], tasks[i][1]));
+        }
+
+        Pair first = pq.remove();
+
+        int ans = first.j;
+
+        // remaining energy after first task
+        int left = first.j - first.i;
+
+        while (!pq.isEmpty()) {
+
+            Pair curr = pq.remove();
+
+            // if remaining energy is less than required minimum
+            if (left < curr.j) {
+
+                int extra = curr.j - left;
+
+                ans += extra;
+
+                left += extra;
+            }
+            left -= curr.i;
+        }
+
+        return ans;
+    }
+}

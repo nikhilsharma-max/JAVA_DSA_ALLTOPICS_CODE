@@ -1,0 +1,29 @@
+class Solution {
+    public int minMoves(int[] nums, int limit) {
+        final int n = nums.length;
+        int ans = n;
+        // delta[i] := the change in moves needed when target increases to i
+        int[] delta = new int[limit * 2 + 2];
+        for (int i = 0; i < n / 2; ++i) {
+            final int a = nums[i];
+            final int b = nums[n - 1 - i];
+            int minVal = Math.min(a, b);
+            int maxVal = Math.max(a, b);
+            // For target < minVal + 1: needs 2 moves
+            // At target = minVal + 1: one pair can use 1 move
+            delta[minVal + 1] -= 1;
+            // At target = a + b: can use 0 moves
+            delta[a + b] -= 1;
+            // After a + b + 1: back to 1 move (until max + limit)
+            delta[a + b + 1] += 1;
+            // After maxVal + limit + 1: needs 2 moves again
+            delta[maxVal + limit + 1] += 1;
+        }
+        // Initially, for target=2, every pair needs 2 moves
+        for (int i = 2, moves = n; i <= limit * 2; ++i) {
+            moves += delta[i];
+            ans = Math.min(ans, moves);
+        }
+        return ans;
+    }
+}

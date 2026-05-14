@@ -1,0 +1,93 @@
+//recursive solution
+
+// One better approach can be using union find 
+
+class Solution {
+
+    public class Pair{
+        int i,j;
+
+        Pair(int i,int j){
+            this.i = i;
+            this.j = j;
+        }
+    }
+
+    public boolean containsCycle(char[][] grid) {
+
+        boolean vis[][] = new boolean[grid.length][grid[0].length];
+
+        for(int i=0;i<grid.length;i++){
+
+            for(int j=0;j<grid[0].length;j++){
+
+                if(!vis[i][j]){
+
+                    if(detectCycle(
+                        new Pair(i,j),
+                        new Pair(-1,-1),
+                        grid,
+                        vis
+                    )){
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean detectCycle(
+        Pair curr,
+        Pair parent,
+        char[][] grid,
+        boolean vis[][]
+    ){
+
+        vis[curr.i][curr.j] = true;
+
+        int dirs[][] = {
+            {-1,0},
+            {1,0},
+            {0,-1},
+            {0,1}
+        };
+
+        for(int d[] : dirs){
+
+            int ni = curr.i + d[0];
+            int nj = curr.j + d[1];
+
+            if(
+                ni>=0 &&
+                nj>=0 &&
+                ni<grid.length &&
+                nj<grid[0].length &&
+                grid[ni][nj] == grid[curr.i][curr.j]
+            ){
+
+                // parent ignore
+                if(ni==parent.i && nj==parent.j){
+                    continue;
+                }
+
+                // already visited => cycle
+                if(vis[ni][nj]){
+                    return true;
+                }
+
+                if(detectCycle(
+                    new Pair(ni,nj),
+                    curr,
+                    grid,
+                    vis
+                )){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+}

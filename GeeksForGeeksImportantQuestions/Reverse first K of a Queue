@@ -1,0 +1,20 @@
+class Solution {
+    public Queue<Integer> reverseFirstK(Queue<Integer> q, int k) {
+        // code here
+        Stack<Integer> s = new Stack<>();
+        Queue<Integer> copy = new LinkedList<>(q);
+        while(k>0){
+            if(copy.isEmpty())return q;
+            s.push(copy.remove());
+            k--;
+        }
+        Queue<Integer> ans = new LinkedList<>();
+        while(!s.isEmpty()){
+            ans.add(s.pop());
+        }
+        while(!copy.isEmpty()){
+            ans.add(copy.remove());
+        }
+        return ans;
+    }
+}

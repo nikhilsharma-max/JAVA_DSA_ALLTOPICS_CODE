@@ -1,0 +1,28 @@
+//solution by mix of recursion and binary search
+// TC - O(logn) if dublicates are not present and O(n) if dublicates are present 
+// SC - O(logn) recursion depth
+
+class Solution {
+    public int findMin(int[] nums) {
+        return getMin(nums,0,nums.length-1);
+    }
+
+    public int getMin(int arr[],int left,int right){
+        if(left>=right)return arr[left];
+        
+        while(left<right){
+            int mid = left + (right-left)/2;
+            if(arr[mid]>arr[right]){
+                left = mid+1;
+            }else if(arr[mid]<arr[right]){
+                right = mid;
+            }
+            else{
+                int ans1 = getMin(arr,mid+1,right);
+                int ans2 = getMin(arr,left,mid);
+                return Math.min(ans1,ans2);
+            }
+        }
+        return arr[left];
+    }
+}

@@ -1,0 +1,32 @@
+class Solution {
+    public boolean canReach(int[] arr, int start) {
+        boolean hasZero = false;
+        int zeroIdx = 0;
+        for(int i = 0;i<arr.length;i++){
+            if(arr[i]==0){
+                zeroIdx = i;
+                hasZero = true;
+            }
+        }
+        if(!hasZero)return false;
+        boolean vis[] = new boolean[arr.length];
+        return hasPath(arr,start,vis);
+    }
+    public boolean hasPath(int arr[], int idx,boolean vis[]){
+        if(idx<0 || idx>=arr.length){
+            return false;
+        }
+        vis[idx] = true;
+        if(arr[idx]==0)return true;
+        //recursive call
+        boolean ans1 = false;
+        boolean ans2 = false;
+        if(idx-arr[idx]>=0 && !vis[idx-arr[idx]]){
+            ans1 = hasPath(arr,idx-arr[idx],vis);
+        }
+        if(idx+arr[idx]<arr.length && !vis[idx+arr[idx]]){
+            ans2 = hasPath(arr,idx+arr[idx],vis);
+        }
+        return ans1 || ans2;
+    }
+}

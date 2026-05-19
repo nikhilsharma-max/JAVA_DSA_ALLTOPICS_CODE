@@ -1,0 +1,111 @@
+import java.util.HashMap;
+
+class LRUCache {
+    private class DLLNode {
+        DLLNode prev;
+        DLLNode next;
+        int key;
+        int value;
+
+        DLLNode(int key, int value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    private DLLNode head;   // LRU (least recently used)
+    private DLLNode tail;   // MRU (most recently used)
+    private int capacity;
+    private int size;
+    private HashMap<Integer, DLLNode> map;
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        this.size = 0;
+        this.map = new HashMap<>();
+        // Dummy head and tail can make logic simpler, but we'll keep it manual as per your style
+        head = null;
+        tail = null;
+    }
+
+    public int get(int key) {
+        DLLNode node = map.get(key);
+        if (node == null) return -1;
+
+        moveToEnd(node);
+        return node.value;
+    }
+
+    private void moveToEnd(DLLNode node) {
+        if (node == tail) return; // already at end
+
+        // Remove node from current position
+        if (node.prev != null) {
+            node.prev.next = node.next;
+        } else {
+            // node is head
+            head = node.next;
+        }
+
+        if (node.next != null) {
+            node.next.prev = node.prev;
+        }
+
+        // Add to end
+        node.prev = tail;
+        node.next = null;
+
+        if (tail != null) {
+            tail.next = node;
+        } else {
+            head = node; // list was empty
+        }
+        tail = node;
+    }
+
+    public void put(int key, int value) {
+        DLLNode node = map.get(key);
+
+        if (node != null) {
+            // Update existing
+            node.value = value;
+            moveToEnd(node);
+        } else {
+            // New key
+            if (size == capacity) {
+                // Evict LRU (head)
+                map.remove(head.key);
+                removeHead();
+            } else {
+                size++;
+            }
+
+            // Add new node at end
+            DLLNode newNode = new DLLNode(key, value);
+            addToEnd(newNode);
+            map.put(key, newNode);
+        }
+    }
+
+    private void addToEnd(DLLNode node) {
+        if (tail == null) {
+            head = node;
+            tail = node;
+        } else {
+            tail.next = node;
+            node.prev = tail;
+            tail = node;
+        }
+    }
+
+    private void removeHead() {
+        if (head == null) return;
+
+        if (head.next != null) {
+            head.next.prev = null;
+        } else {
+            tail = null; // only one node
+        }
+        head = head.next;
+    }
+}

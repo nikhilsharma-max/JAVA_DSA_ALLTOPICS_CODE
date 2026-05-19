@@ -1,0 +1,26 @@
+class Solution {
+    public boolean checkValidGrid(int[][] grid) {
+        int n = grid.length;
+        if (grid[0][0] != 0) return false;
+        
+        int i = 0, j = 0;
+        int[][] directions = {{ -2, -1}, {-2, 1}, {-1, -2}, {-1, 2}, 
+                              { 1, -2}, { 1, 2}, { 2, -1}, { 2, 1}};
+        
+        for (int move = 1; move < n * n; move++) {
+            boolean found = false;
+            for (int[] dir : directions) {
+                int ni = i + dir[0];
+                int nj = j + dir[1];
+                if (ni >= 0 && ni < n && nj >= 0 && nj < n && grid[ni][nj] == move) {
+                    i = ni;
+                    j = nj;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) return false;
+        }
+        return true;
+    }
+}

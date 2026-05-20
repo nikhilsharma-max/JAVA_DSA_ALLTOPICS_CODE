@@ -1,0 +1,39 @@
+class Solution {
+    public int rotatedDigits(int n) {
+        int count = 0;
+        for (int i = 1; i <= n; i++) {
+            if (isValidRotated(i)) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    private boolean isValidRotated(int num) {
+        int original = num;
+        int rotated = 0;
+        boolean hasChanged = false;
+        
+        while (num > 0) {
+            int digit = num % 10;
+            int newDigit;
+            
+            switch (digit) {
+                case 0 -> newDigit = 0;
+                case 1 -> newDigit = 1;
+                case 8 -> newDigit = 8;
+                case 2 -> { newDigit = 5; hasChanged = true; }
+                case 5 -> { newDigit = 2; hasChanged = true; }
+                case 6 -> { newDigit = 9; hasChanged = true; }
+                case 9 -> { newDigit = 6; hasChanged = true; }
+                default -> { return false; } // 3,4,7 are invalid
+            }
+            
+            rotated = rotated * 10 + newDigit;
+            num /= 10;
+        }
+        
+        // Must be different from original → at least one digit must have changed
+        return hasChanged;
+    }
+}

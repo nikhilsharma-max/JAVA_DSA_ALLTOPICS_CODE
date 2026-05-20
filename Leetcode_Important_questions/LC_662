@@ -1,0 +1,49 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}=-0987654321₹₹                      
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public class Pair{
+        TreeNode node;
+        int idx;
+        public Pair(TreeNode node,int idx){
+            this.node = node;
+            this.idx = idx;
+        }
+    }
+    public int widthOfBinaryTree(TreeNode root) {
+        if(root==null)return 0;
+        if(root.left==null && root.right==null)return 1;
+        Deque<Pair> q = new ArrayDeque<>();
+        int maxWidth = Integer.MIN_VALUE;
+        q.add(new Pair(root,0));
+        while(!q.isEmpty()){
+            int size = q.size();
+            int left = 	q.peekFirst().idx;
+            int right = q.peekLast().idx;
+            maxWidth = Math.max(maxWidth,right-left+1);
+            while(size>0){
+                Pair curr = q.removeFirst();
+                if(curr.node.left!=null){
+                    q.add(new Pair(curr.node.left,2*(curr.idx)+1));
+                }
+                if(curr.node.right!=null){
+                    q.add(new Pair(curr.node.right,2*(curr.idx)+2));
+                }
+                size--;
+            }
+        }
+        return maxWidth;
+    }
+}

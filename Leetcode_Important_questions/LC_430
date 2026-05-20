@@ -35,3 +35,61 @@ class Solution {
     }
 
 }
+
+
+// Solution 2, by making class
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    
+    public class Info {
+        boolean isBalanced;
+        int height;
+        
+        public Info(boolean isBalanced, int height) {
+            this.isBalanced = isBalanced;
+            this.height = height;
+        }
+    }
+    
+    public boolean isBalanced(TreeNode root) {
+        if (root == null) return true;
+        return calculateInfo(root).isBalanced;
+    }
+    
+    private Info calculateInfo(TreeNode root) {
+        if (root == null) {
+            return new Info(true, 0);
+        }
+        
+        Info left = calculateInfo(root.left);
+        Info right = calculateInfo(root.right);
+        
+        int lh = left.height;
+        int rh = right.height;
+        int ht = Math.max(lh, rh) + 1;
+        
+        // A subtree is balanced only if:
+        // 1. Left subtree is balanced
+        // 2. Right subtree is balanced
+        // 3. Current node heights differ by at most 1
+        boolean isBal = left.isBalanced && 
+                        right.isBalanced && 
+                        (Math.abs(lh - rh) <= 1);
+        
+        return new Info(isBal, ht);
+    }
+}

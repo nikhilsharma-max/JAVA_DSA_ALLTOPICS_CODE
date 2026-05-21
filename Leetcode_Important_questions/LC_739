@@ -1,0 +1,27 @@
+class Solution {
+    public class Pair{
+        int element;
+        int idx;
+        public Pair(int element,int idx){
+            this.element = element;
+            this.idx = idx;
+        }
+    }
+    public int[] dailyTemperatures(int[] temp) {
+        int ans[] = new int[temp.length];
+        ans[ans.length-1] = 0;
+        Stack<Pair> s =new Stack<>();
+        s.push(new Pair(temp[temp.length-1],temp.length-1));
+        for(int i = temp.length-2;i>=0;i--){
+            int currTemp = temp[i];
+            while(!s.isEmpty() && s.peek().element<=currTemp)s.pop();
+            if(s.isEmpty()){
+                ans[i] = 0;
+            }else{
+                ans[i] = s.peek().idx-i;
+            }
+            s.push(new Pair(temp[i],i));
+        }
+        return ans;
+    }
+}

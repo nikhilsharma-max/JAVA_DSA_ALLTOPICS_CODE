@@ -1,0 +1,78 @@
+// Solution by making trie
+
+class Solution {
+    // Trie Node
+    static class TrieNode {
+        TrieNode[] children = new TrieNode[10];
+    }
+    
+    public int longestCommonPrefix(int[] arr1, int[] arr2) {
+        TrieNode root = new TrieNode();
+        int maxLen = 0;
+        //Insert all numbers from arr1 into Trie
+        for (int num : arr1) {
+            insert(root, num);
+        }
+        // For each number in arr2, find the longest matching prefix
+        for (int num : arr2) {
+            int len = searchLongestPrefix(root, num);
+            maxLen = Math.max(maxLen, len);
+        }     
+        return maxLen;
+    }
+    
+    private void insert(TrieNode root, int num) {
+        String s = String.valueOf(num);
+        TrieNode node = root; 
+        for (char c : s.toCharArray()) {
+            int digit = c - '0';
+            if (node.children[digit] == null) {
+                node.children[digit] = new TrieNode();
+            }
+            node = node.children[digit];
+        }
+    }
+    
+    private int searchLongestPrefix(TrieNode root, int num) {
+        String s = String.valueOf(num);
+        TrieNode node = root;
+        int length = 0;
+        for (char c : s.toCharArray()) {
+            int digit = c - '0';
+            if (node.children[digit] != null) {
+                length++;
+                node = node.children[digit];
+            } else {
+                break;
+            }
+        }
+        return length;
+    }
+}
+
+//This is brute force solution which gives TLE for large test cases
+// class Solution {
+//     public int longestCommonPrefix(int[] arr1, int[] arr2) {
+//         int maxLen = 0;
+//         for(int i = 0;i<arr1.length;i++){
+//             for(int j = 0;j<arr2.length;j++){
+//                 int currMax = findMaxCommonLength(arr1[i],arr2[j]);
+//                 maxLen = Math.max(maxLen,currMax);
+//             }
+//         }
+//         return maxLen;
+//     }
+//     private int findMaxCommonLength(int num1,int num2){
+//         String str1 = String.valueOf(num1);
+//         String str2 = String.valueOf(num2);
+//         int maxLen = 0;
+//         for(int i = 0;i<str1.length() && i<str2.length();i++){
+//             if(str1.charAt(i)==str2.charAt(i)){
+//                 maxLen++;
+//             }else{
+//                 return maxLen;
+//             }
+//         }
+//         return maxLen;
+//     }
+// }

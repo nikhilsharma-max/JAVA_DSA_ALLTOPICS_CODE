@@ -1,0 +1,66 @@
+// Solution one -- most optimised
+class Solution {
+    public int superEggDrop(int k, int n) {
+        
+        int moves = 0;
+        int[] dp = new int[k+1];
+
+        while(dp[k] <  n){
+            moves++;
+            for(int egg = k;egg > 0;egg--){
+                dp[egg] = dp[egg] + dp[egg - 1] + 1;
+            }
+        }
+
+        return moves;
+    }
+}
+
+
+//Solution two
+
+
+class Solution {
+    public int superEggDrop(int k, int n) {
+        int[][] dp = new int[n + 1][k + 1];
+        
+        // Base cases
+        for (int i = 1; i <= n; i++) {
+            dp[i][1] = i;        // 1 egg
+        }
+        for (int j = 1; j <= k; j++) {
+            dp[1][j] = 1;        // 1 floor
+        }
+        
+        // Fill DP table with Binary Search optimization
+        for (int i = 2; i <= n; i++) {           // floors
+            for (int j = 2; j <= k; j++) {       // eggs
+                int left = 1, right = i;
+                int minMoves = Integer.MAX_VALUE;
+                
+                // Binary search for optimal floor to drop
+                while (left <= right) {
+                    int mid = left + (right - left) / 2;
+                    
+                    int breaks = dp[mid - 1][j - 1];   // egg breaks
+                    int survives = dp[i - mid][j];     // egg survives
+                    
+                    int worst = Math.max(breaks, survives);
+                    
+                    minMoves = Math.min(minMoves, worst);
+                    
+                    // Optimization: move towards the side with higher cost
+                    if (breaks > survives) {
+                        right = mid - 1;
+                    } else {
+                        left = mid + 1;
+                    }
+                }
+                
+                dp[i][j] = minMoves + 1;
+            }
+        }
+        
+        return dp[n][k];
+    }
+}

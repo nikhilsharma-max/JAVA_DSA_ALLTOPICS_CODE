@@ -1,0 +1,27 @@
+class Solution {
+    public int[] limitOccurrences(int[] nums, int k) {
+        int maxEl = nums[nums.length-1];
+        int freq[] = new int[maxEl+1];
+        Arrays.fill(freq,0);
+        for(int i = 0;i<nums.length;i++){
+            freq[nums[i]]++;
+        }
+        int numberOfEl = 0;
+        for(int i = 0;i<freq.length;i++){
+            if(freq[i]>k){
+                freq[i]=k;
+            }
+            numberOfEl+=freq[i];
+        }
+        int ans[] = new int[numberOfEl];
+        int idx = 0;
+        for(int i = 0;i<freq.length;i++){
+            while(freq[i]>0){
+                ans[idx] = i;
+                idx++;
+                freq[i]--;
+            }
+        }
+        return ans;
+    }
+}

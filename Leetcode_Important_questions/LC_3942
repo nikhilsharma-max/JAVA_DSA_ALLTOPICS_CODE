@@ -1,0 +1,67 @@
+class Solution {
+    public int minOperations(int[] nums) {
+        int n = nums.length;
+        if(n<=1)return 0;
+
+        int s = nums[0];
+        boolean isInc = true;
+        for(int i = 0;i<n;i++){
+            if(nums[i] != (i+s)%n){
+                isInc = false;
+                break;
+            }
+        }
+
+        int t = (n-1-nums[0]+n)% n;
+        boolean isDec = true;
+        for(int i =0 ;i<n;i++){
+            int exp = (n-1-(i+t)%n+n)%n;
+            if(nums[i]!=exp){
+                isDec = false;
+                break;
+            }
+        }
+        if(!isInc && !isDec)return -1;
+        int startPos;
+        boolean startFlip;
+        if(isInc){
+            startPos = s;
+            startFlip = false;
+        }
+        else{
+            startPos = t;
+            startFlip = true;
+        }
+        if(startPos == 0 && ! startFlip)return 0;
+        int N = 2*n;
+        int[] dist = new int[N];
+        Arrays.fill(dist,-1);
+        Queue<Integer> q = new LinkedList<>();
+        int startState = startFlip ? (n+startPos) : startPos;
+        q.offer(startState);
+        dist[startState] = 0;
+        int target = 0;
+        while(!q.isEmpty()){
+            int cur = q.poll();
+            int d = dist[cur];
+            if(cur==target)return d;
+            boolean cFlip = cur>=n;
+            int cPos = cFlip ? cur-n : cur;
+            int newPosL = (cPos+1)%n;
+            int newStateL = cFlip ? (n+newPosL): newPosL;
+            if(dist[newStateL]==-1){
+                dist[newStateL] = d+1;
+                q.offer(newStateL);
+            }
+            boolean newFlipR = !cFlip;
+            int newPosR = (n-cPos)%n;
+            int newStateR = newFlipR?(n+newPosR):newPosR;
+            if(dist[newStateR]==-1){
+                dist[newStateR] = d+1;
+                q.offer(newStateR);
+            }
+        }
+        
+        return -1;
+    }
+}

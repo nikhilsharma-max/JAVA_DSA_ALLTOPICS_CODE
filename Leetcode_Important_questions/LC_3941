@@ -1,0 +1,36 @@
+class Solution {
+    public int passwordStrength(String password) {
+        int lowerAlp[] = new int[26];
+        int capital[] = new int[26];
+        int number[] = new int[10];
+        Set<Character> special = new HashSet<>();
+        char arr[] = password.toCharArray();
+        for(char ch : arr){
+            if(ch>='a' && ch<='z'){
+                lowerAlp[ch-'a']++;
+            }else if(ch>='A' && ch<='Z'){
+                capital[ch-'A']++;
+            }else if(ch>='0' && ch<='9'){
+                number[ch-'0']++;
+            }else if(ch == '!' || ch == '@' || ch == '#' || ch == '$'){
+                special.add(ch);
+            }
+        }
+        int strength = 0;
+        int low = 0;
+        int cap = 0;
+        for(int i = 0;i<26;i++){
+            if(lowerAlp[i]!=0)low++;
+            if(capital[i]!=0)cap++;
+        }
+        strength += low*1;
+        strength += cap*2;
+        low = 0;
+        for(int i= 0;i<10;i++){
+            if(number[i]!=0)low++;
+        }
+        strength += low*3;
+        strength += special.size()*5;
+        return strength;
+    }
+}

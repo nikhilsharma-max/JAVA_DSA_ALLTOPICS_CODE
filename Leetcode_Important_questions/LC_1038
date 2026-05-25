@@ -1,0 +1,17 @@
+class Solution {
+    private int sum = 0;  // running sum of greater values
+    
+    public TreeNode bstToGst(TreeNode root) {
+        if (root == null) return null;
+        
+        // Reverse Inorder: Right -> Root -> Left
+        bstToGst(root.right);           // Process all greater values first
+        
+        sum += root.val;                // Add current value to running sum
+        root.val = sum;                 // Update to sum of all >= current
+        
+        bstToGst(root.left);            // Process smaller values
+        
+        return root;
+    }
+}

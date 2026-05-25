@@ -1,0 +1,29 @@
+class Solution {
+    boolean graphColoring(int v, int[][] edges, int m) {
+        // code here
+        int color[] = new int[v];
+        Arrays.fill(color,0);
+        if(solve(0,edges,color,v,m))return true;
+        return false;
+    }
+    boolean solve(int node,int[][] edges,int[] color,int v, int m){
+        if(node==v)return true;
+        for(int i = 1;i<=m;i++){
+            if(isSafe(node,edges,color,v,i)){
+                color[node] = i;
+                if(solve(node+1,edges,color,v,m))return true;
+                color[node] = 0;
+            }
+        }
+        return false;
+    }
+    public boolean isSafe(int node,int[][] edges,int[] color,int v, int currColor){
+        for(int i = 0;i<edges.length;i++){
+            if(edges[i][0]==node){
+                if(color[edges[i][1]]==currColor)return false;
+            }
+        }
+        return true;
+    }
+    
+}

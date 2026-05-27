@@ -1,0 +1,38 @@
+class Solution {
+    public class Pair{
+        int freq;
+        int idx;
+        public Pair(int freq,int idx){
+            this.freq = freq;
+            this.idx = idx;
+        }
+    }
+    public int numberOfSpecialChars(String word) {
+        if(word.length()==1)return 0;
+        Pair capital[] = new Pair[26];
+        Pair small[] = new Pair[26];
+        for(int i = 0;i<26;i++){
+            capital[i] = new Pair(0,0);
+            small[i] = new Pair(0,0);
+        }
+        int ans = 0;
+        for(int i = 0;i<word.length();i++){
+            char ch = word.charAt(i);
+            if(ch>='a' && ch<='z'){
+                small[ch-'a'].freq++;
+                small[ch-'a'].idx = i;
+            }else{
+                capital[ch-'A'].freq++;
+                if(capital[ch-'A'].freq==1){
+                    capital[ch-'A'].idx = i;
+                }
+            }
+        }
+        for(int i = 0;i<26;i++){
+            if(small[i].freq!=0 && capital[i].freq!=0){
+                if(small[i].idx<capital[i].idx)ans++;
+            }
+        }
+        return ans;
+    }
+}

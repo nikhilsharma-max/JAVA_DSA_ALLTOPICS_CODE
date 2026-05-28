@@ -1,0 +1,78 @@
+class Solution {
+    
+    class Node {
+        Node[] children = new Node[26];
+        int minLenIdx;  // index of the shortest word with this suffix
+        
+        public Node(int minLenIdx) {
+            this.minLenIdx = minLenIdx;
+            // children are already null by default in Java, but explicit is fine
+        }
+    }
+    
+    Node root = new Node(-1); // -1 as sentinel initially
+    
+    public int[] stringIndices(String[] wordsContainer, String[] wordsQuery) {
+        // Initialize root with the shortest word overall
+        int shortestIdx = 0;
+        for (int i = 1; i < wordsContainer.length; i++) {
+            if (wordsContainer[i].length() < wordsContainer[shortestIdx].length()) {
+                shortestIdx = i;
+            }
+        }
+        root.minLenIdx = shortestIdx;
+        
+        // Insert all words in reverse (for suffix matching)
+        for (int i = 0; i < wordsContainer.length; i++) {
+            insert(wordsContainer[i], i, wordsContainer);
+        }
+        
+        int[] ans = new int[wordsQuery.length];
+        for (int i = 0; i < wordsQuery.length; i++) {
+            ans[i] = search(wordsQuery[i]);
+        }
+        return ans;
+    }
+    
+    private void insert(String word, int idx, String[] wordsContainer) {
+        Node curr = root;
+        
+        // Update root as well if current word is shorter
+        if (wordsContainer[curr.minLenIdx].length() > wordsContainer[idx].length()) {
+            curr.minLenIdx = idx;
+        }
+        
+        for (int i = word.length() - 1; i >= 0; i--) {
+            int ch = word.charAt(i) - 'a';
+            
+            if (curr.children[ch] == null) {
+                curr.children[ch] = new Node(idx);
+            }
+            
+            curr = curr.children[ch];
+            
+            // Update minLenIdx at every node on the path
+            if (wordsContainer[curr.minLenIdx].length() > wordsContainer[idx].length()) {
+                curr.minLenIdx = idx;
+            }
+        }
+    }
+    
+    private int search(String word) {
+        Node curr = root;
+        int result = curr.minLenIdx; // fallback to shortest overall
+        
+        for (int i = word.length() - 1; i >= 0; i--) {
+            int ch = word.charAt(i) - 'a';
+            
+            if (curr.children[ch] == null) {
+                return result; // return last valid suffix's shortest word
+            }
+            
+            curr = curr.children[ch];
+            result = curr.minLenIdx; // update result as we go deeper
+        }
+        
+        return result; // full match case
+    }
+}

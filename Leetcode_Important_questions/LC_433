@@ -1,0 +1,58 @@
+class Solution {
+    public int minMutation(String startGene, String endGene, String[] bank) {
+        if (startGene.length() != 8 || endGene.length() != 8) {
+            return -1;
+        }
+        
+        HashSet<String> geneSet = new HashSet<>();
+        for (String gene : bank) {
+            geneSet.add(gene);
+        }
+        
+        if (!geneSet.contains(endGene)) {
+            return -1;
+        }
+        
+        HashSet<String> visited = new HashSet<>();
+        Queue<String> queue = new LinkedList<>();
+        
+        queue.add(startGene);
+        visited.add(startGene);
+        
+        int level = 0;
+        String chars = "ACGT";
+        
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            
+            while (size-- > 0) {
+                String curr = queue.remove();
+                
+                if (curr.equals(endGene)) {
+                    return level;
+                }
+                
+                // Generate all possible mutations
+                for (int i = 0; i < curr.length(); i++) {
+                    char original = curr.charAt(i);
+                    
+                    for (char ch : chars.toCharArray()) {
+                        if (ch == original) continue;  // Skip if same character
+                        
+                        // Create new gene by changing one character
+                        StringBuilder sb = new StringBuilder(curr);
+                        sb.setCharAt(i, ch);
+                        String neighbor = sb.toString();
+                        
+                        if (!visited.contains(neighbor) && geneSet.contains(neighbor)) {
+                            visited.add(neighbor);
+                            queue.add(neighbor);
+                        }
+                    }
+                }
+            }
+            level++;
+        }
+        return -1;
+    }
+}

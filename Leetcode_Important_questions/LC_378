@@ -1,0 +1,41 @@
+class Solution {
+    public int kthSmallest(int[][] matrix, int k) {
+        int R = matrix.length;
+        int C = matrix[0].length;
+        int requiredSmaller = k - 1;           // k-1 elements should be smaller or equal
+        
+        int start = matrix[0][0];
+        int end = matrix[R - 1][C - 1];
+        
+        while (start <= end) {
+            int mid = start + (end - start) / 2;
+            int count = countLessThanEqual(matrix, mid);
+            
+            if (count <= requiredSmaller) {
+                start = mid + 1;
+            } else {
+                end = mid - 1;
+            }
+        }
+        return start;
+    }
+    
+    private int countLessThanEqual(int[][] matrix, int val) {
+        int count = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            int left = 0;
+            int right = matrix[i].length - 1;
+            
+            while (left <= right) {
+                int mid = left + (right - left) / 2;
+                if (matrix[i][mid] <= val) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+            count += left;   // 'left' is the number of elements <= val in this row
+        }
+        return count;
+    }
+}

@@ -1,0 +1,14 @@
+class Solution {
+    public int minElement(int[] nums) {
+        int minDigitSum = Integer.MAX_VALUE;
+        for(int num : nums){
+            int currDigitSum = 0;
+            while(num>0){
+                currDigitSum += num%10;
+                num/=10;
+            }
+            minDigitSum = Math.min(minDigitSum,currDigitSum);
+        }
+        return minDigitSum;
+    }
+}

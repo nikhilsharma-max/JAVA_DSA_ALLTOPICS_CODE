@@ -1,0 +1,21 @@
+class Solution {
+    public boolean canVisitAllRooms(List<List<Integer>> rooms) {
+        boolean vis[] = new boolean[rooms.size()];
+         //bfs 
+        bfs(0,vis,rooms);
+        for(int i = 0;i<vis.length;i++){
+            if(!vis[i])return false;
+        }
+        return true;
+    }
+
+    public void bfs(int j, boolean vis[],List<List<Integer>> rooms){
+        vis[j] = true;
+        List<Integer> neighbors = rooms.get(j);
+        for(int i = 0;i<neighbors.size();i++){
+            if(!vis[neighbors.get(i)]){
+                bfs(neighbors.get(i),vis,rooms);
+            }
+        }
+    }
+}

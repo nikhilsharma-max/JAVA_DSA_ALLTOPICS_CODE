@@ -1,0 +1,34 @@
+class Solution {
+    public boolean validPath(int n, int[][] edges, int source, int destination) {
+        if (source == destination) return true;
+        
+        HashMap<Integer, ArrayList<Integer>> hm = new HashMap<>();
+        
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            hm.computeIfAbsent(u, k -> new ArrayList<>()).add(v);
+            hm.computeIfAbsent(v, k -> new ArrayList<>()).add(u);
+        }
+        
+        boolean[] vis = new boolean[n];
+        return dfs(source, destination, vis, hm);
+    }
+    
+    private boolean dfs(int src, int dest, boolean[] vis, HashMap<Integer, ArrayList<Integer>> hm) {
+        if (src == dest) return true;
+        if (vis[src]) return false;
+        
+        vis[src] = true;
+        
+        ArrayList<Integer> neighbors = hm.get(src);
+        if (neighbors == null) return false;
+        
+        for (int nei : neighbors) {
+            if (dfs(nei, dest, vis, hm)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

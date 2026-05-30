@@ -1,0 +1,90 @@
+// By segment trees
+
+import java.util.*;
+
+class FenwickTree {
+    private int[] vals;
+    
+    public FenwickTree(int n) {
+        vals = new int[n + 1];
+    }
+    
+    public void maximize(int i, int val) {
+        while (i < vals.length) {
+            vals[i] = Math.max(vals[i], val);
+            i += lowbit(i);
+        }
+    }
+    
+    public int get(int i) {
+        int res = 0;
+        while (i > 0) {
+            res = Math.max(res, vals[i]);
+            i -= lowbit(i);
+        }
+        return res;
+    }
+    
+    private static int lowbit(int i) {
+        return i & -i;
+    }
+}
+
+class Solution {
+    public List<Boolean> getResults(int[][] queries) {
+        int maxX = 0;
+        for (int[] q : queries) {
+            maxX = Math.max(maxX, q[1]);
+        }
+        int n = Math.max(50000, maxX + 1);
+        
+        List<Boolean> ans = new ArrayList<>();
+        FenwickTree tree = new FenwickTree(n + 1);
+        TreeSet<Integer> obstacles = new TreeSet<>();
+        obstacles.add(0);
+        obstacles.add(n);
+        
+        // Collect all obstacle positions for initialization
+        for (int[] query : queries) {
+            if (query[0] == 1) {
+                obstacles.add(query[1]);
+            }
+        }
+        
+        // Initialize Fenwick Tree with max gaps
+        Iterator<Integer> it = obstacles.iterator();
+        int prev = it.next();
+        while (it.hasNext()) {
+            int curr = it.next();
+            tree.maximize(curr, curr - prev);
+            prev = curr;
+        }
+        
+        // Process queries in reverse (Type 1 becomes remove)
+        for (int i = queries.length - 1; i >= 0; i--) {
+            int[] query = queries[i];
+            int type = query[0];
+            int x = query[1];
+            
+            if (type == 1) {
+                // Remove obstacle (reverse of insert)
+                Integer nextPos = obstacles.higher(x);
+                Integer prevPos = obstacles.lower(x);
+                obstacles.remove(x);
+                
+                if (nextPos != null) {
+                    tree.maximize(nextPos, nextPos - prevPos);
+                }
+            } else {
+                // Type 2: Check if we can place block of size query[2]
+                int sz = query[2];
+                Integer prevPos = obstacles.floor(x);
+                boolean canPlace = (tree.get(prevPos) >= sz) || (x - prevPos >= sz);
+                ans.add(canPlace);
+            }
+        }
+        
+        Collections.reverse(ans);
+        return ans;
+    }
+}

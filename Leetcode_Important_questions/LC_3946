@@ -1,0 +1,148 @@
+class Solution {
+    public int maximumSaleItems(int[][] items, int budget) {
+        int n = items.length;
+        int[] bonus = new int[n];
+        for(int i = 0;i<n;i++){
+            int factori = items[i][0];
+            for(int j = 0;j<n;j++){
+                if(i==j)continue;
+                int factorj = items[j][0];
+                if(factorj%factori == 0){
+                    bonus[i]++;
+                }
+            }
+        }
+        int[] dp = new int[budget+1];
+        for(int i = 0;i<n;i++){
+            int price = items[i][1];
+            int ndp[] = dp.clone();
+            for(int spent = 0;spent<=budget;spent++){
+                if(spent+price>budget)continue;
+                //buy first copy
+                ndp[spent+price] = Math.max(ndp[spent+price],dp[spent]+bonus[i]+1);
+
+            }
+            for(int b = price;b<=budget;b++){
+                ndp[b]=Math.max(ndp[b],ndp[b-price]+1);
+            }
+            dp = ndp;
+        }
+        int ans = 0;
+        for(int x:dp){
+            ans = Math.max(ans,x);
+        }
+        return ans;
+    }
+}
+
+
+
+
+
+//This solution is incorrect
+            ||  
+            ˆˆ
+//class Solution {
+    // public class Pair implements Comparable<Pair>{
+    //     int budget;
+    //     int fact;
+    //     boolean buy;
+    //     public Pair(int budget,int fact,boolean buy){
+    //         this.budget = budget;
+    //         this.fact = fact;
+    //         this.buy = buy;
+    //     }
+    //     @Override
+    //     public int compareTo(Pair p2){
+    //         if((p2.fact-this.fact)==0){
+    //             return this.budget-p2.budget;
+    //         }
+    //         return p2.fact-this.fact;
+    //     }
+    // }
+    // public class Pair2 {
+    //     int budget;
+    //     int fact;
+    //     boolean buy;
+    //     public Pair2(int budget,int fact,boolean buy){
+    //         this.budget = budget;
+    //         this.fact = fact;
+    //         this.buy = buy;
+    //     }
+    // }
+    // public int maximumSaleItems(int[][] items, int budget) {
+        // int factor[] = new int[items.length];
+        // for(int i = 0;i<items.length;i++){
+        //     factor[i] = items[i][0];
+        // }
+        // int cd[] = new int[factor.length];
+        // for(int i = 0;i<cd.length;i++){
+        //     int maxFact = 0;
+        //     for(int j = 0;j<cd.length;j++){
+        //         if(i==j)continue;
+        //         if(factor[j]%factor[i]==0)maxFact++;
+        //     }
+        //     cd[i] = maxFact;
+        // }
+        // PriorityQueue<Pair> pq = new PriorityQueue<>();
+        // for(int i = 0;i<cd.length;i++){
+        //     pq.add(new Pair(items[i][1],cd[i],false));
+        // }
+        // Queue<Pair2> q = new LinkedList<>();
+        // while(!pq.isEmpty()){
+        //     Pair curr = pq.remove();
+        //     q.add(new Pair2(curr.budget,curr.fact,false));
+        // }
+        // int maxCopies = 0;
+        // while(!q.isEmpty() && budget>0){
+        //     Pair2 curr = q.remove();
+        //     if(curr.budget<=budget){
+        //         budget-=curr.budget;
+        //         if(!curr.buy){
+        //             maxCopies += (curr.fact+1);
+        //         }else{
+                    
+        //                 maxCopies+=1;
+                   
+                    
+        //         }
+        //         if(curr.budget<=budget){
+        //             q.add(new Pair2(curr.budget,curr.fact,true));
+        //         }
+        //     }
+        // }
+        // return maxCopies;
+        // int n = items.length;
+        // int maxTotal = 0;
+        // for(int mask = 0;mask<(1<<n);mask++){
+        //     long cost = 0;
+        //     int minPrice = Integer.MAX_VALUE;
+        //     int purchasedBase = 0;
+        //     for(int i = 0;i<n;i++){
+        //         if((mask&(1<<i))!=0){
+        //             cost+=items[i][1];
+        //             minPrice = Math.min(minPrice,items[i][1]);
+        //             purchasedBase++;
+        //         }
+        //     }
+        //     if(cost>budget)continue;
+        //     int remaining = budget-(int)cost;
+        //     int extras = (minPrice==Integer.MAX_VALUE)?0:remaining/minPrice;
+        //     int purchased = purchasedBase+extras;
+
+        //     int freeCount = 0;
+        //     for(int j = 0;j<n;j++){
+        //         for(int i = 0;i<n;i++){
+        //             if((mask&(1<<i))!=0 && i!=j){
+        //                 if(items[j][0]%items[i][0]==0){
+        //                     freeCount++;
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     int total = purchased+freeCount;
+        //     maxTotal = Math.max(maxTotal,total);
+        // }
+        // return maxTotal;
+//     }
+// }

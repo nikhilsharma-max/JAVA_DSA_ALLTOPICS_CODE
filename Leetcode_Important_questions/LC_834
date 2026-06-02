@@ -1,0 +1,68 @@
+import java.util.*;
+
+class Solution {
+    private int n;
+    private List<Integer>[] graph;
+    private int[] subtreeSize;  // Number of nodes in subtree
+    private long[] ans;         // Sum of distances
+    
+    public int[] sumOfDistancesInTree(int n, int[][] edges) {
+        this.n = n;
+        graph = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            graph[u].add(v);
+            graph[v].add(u);
+        }
+        
+        subtreeSize = new int[n];
+        ans = new long[n];
+        
+        // First DFS: Compute subtree sizes and sum of distances from root (0)
+        dfs1(0, -1);
+        
+        // Second DFS: Re-root and compute for all nodes
+        dfs2(0, -1);
+        
+        int[] result = new int[n];
+        for (int i = 0; i < n; i++) {
+            result[i] = (int) ans[i];
+        }
+        return result;
+    }
+    
+    // DFS1: Post-order - Calculate subtree sizes and ans[0]
+    private void dfs1(int node, int parent) {
+        subtreeSize[node] = 1;  // Include itself
+        
+        for (int child : graph[node]) {
+            if (child != parent) {
+                dfs1(child, node);
+                subtreeSize[node] += subtreeSize[child];
+                // Add distance sum from child subtree (each node is 1 edge farther)
+                ans[node] += ans[child] + subtreeSize[child];
+            }
+        }
+    }
+    
+    // DFS2: Pre-order - Reroot the tree
+    private void dfs2(int node, int parent) {
+        for (int child : graph[node]) {
+            if (child != parent) {
+                // When rerooting from node to child:
+                // - All nodes in child's subtree get 1 closer
+                // - All nodes outside child's subtree get 1 farther
+                ans[child] = ans[node] 
+                           - subtreeSize[child]     // subtract old contribution
+                           + (n - subtreeSize[child]); // add new contribution
+                
+                dfs2(child, node);
+            }
+        }
+    }
+}

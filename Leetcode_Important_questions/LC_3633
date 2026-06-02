@@ -1,0 +1,84 @@
+// Method 1
+
+class Solution {
+
+    private int solve(
+        int[] start1,
+        int[] duration1,
+        int[] start2,
+        int[] duration2
+    ) {
+        int finish1 = Integer.MAX_VALUE;
+        for (int i = 0; i < start1.length; i++) {
+            finish1 = Math.min(finish1, start1[i] + duration1[i]);
+        }
+        int finish2 = Integer.MAX_VALUE;
+        for (int i = 0; i < start2.length; i++) {
+            finish2 = Math.min(
+                finish2,
+                Math.max(start2[i], finish1) + duration2[i]
+            );
+        }
+        return finish2;
+    }
+
+    public int earliestFinishTime(
+        int[] landStartTime,
+        int[] landDuration,
+        int[] waterStartTime,
+        int[] waterDuration
+    ) {
+        int land_water = solve(
+            landStartTime,
+            landDuration,
+            waterStartTime,
+            waterDuration
+        );
+        int water_land = solve(
+            waterStartTime,
+            waterDuration,
+            landStartTime,
+            landDuration
+        );
+        return Math.min(land_water, water_land);
+    }
+}
+
+
+
+//Method 2
+
+class Solution {
+    public int earliestFinishTime(int[] landStartTime, int[] landDuration, int[] waterStartTime, int[] waterDuration) {
+        int minTime = Integer.MAX_VALUE;
+        for(int i = 0;i<landStartTime.length;i++){
+            int currTime = landStartTime[i]+landDuration[i];
+            int store = currTime;
+            for(int j = 0;j<waterStartTime.length;j++){
+                if(waterStartTime[j]<=currTime){
+                    currTime+=waterDuration[j];
+                }else{
+                    currTime = waterDuration[j]+waterStartTime[j];
+                }
+                minTime = Math.min(minTime,currTime);
+                currTime = store;
+            }
+        }
+    
+        for(int i = 0;i<waterStartTime.length;i++){
+            int currTime = waterStartTime[i]+waterDuration[i];
+            int store = currTime;
+            for(int j = 0;j<landStartTime.length;j++){
+                if(landStartTime[j]<=currTime){
+                    currTime+=landDuration[j];
+                }else{
+                    currTime = landDuration[j]+landStartTime[j];
+                }
+                minTime = Math.min(minTime,currTime);
+                currTime = store;
+            }
+        }
+
+        return minTime;
+    }
+}

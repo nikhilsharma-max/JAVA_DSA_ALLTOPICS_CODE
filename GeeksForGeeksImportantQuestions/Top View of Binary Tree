@@ -1,0 +1,47 @@
+import java.util.*;
+
+class Solution {
+    static class Info {           // Better as static
+        Node node;
+        int hd;
+        Info(Node node, int hd) {
+            this.node = node;
+            this.hd = hd;
+        }
+    }
+
+    public ArrayList<Integer> topView(Node root) {
+        ArrayList<Integer> ans = new ArrayList<>();
+        if (root == null) return ans;
+
+        HashMap<Integer, Node> map = new HashMap<>();
+        Queue<Info> q = new LinkedList<>();
+        q.add(new Info(root, 0));
+
+        int minHd = 0, maxHd = 0;
+
+        while (!q.isEmpty()) {
+            Info curr = q.remove();
+            int hd = curr.hd;
+            Node node = curr.node;
+            if (!map.containsKey(hd)) {
+                map.put(hd, node);
+            }
+
+            if (node.left != null) {
+                q.add(new Info(node.left, hd - 1));
+                minHd = Math.min(minHd, hd - 1);
+            }
+            if (node.right != null) {
+                q.add(new Info(node.right, hd + 1));
+                maxHd = Math.max(maxHd, hd + 1);
+            }
+        }
+
+        for (int i = minHd; i <= maxHd; i++) {
+            ans.add(map.get(i).data);
+        }
+
+        return ans;
+    }
+}

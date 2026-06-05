@@ -1,0 +1,60 @@
+import java.util.*;
+
+class Solution {
+    public long totalWaviness(long num1, long num2) {
+        return count(num2) - (num1 == 0 ? 0 : count(num1 - 1));
+    }
+
+    private long count(long x) {
+        if (x < 0) return 0;
+        String s = String.valueOf(x);
+        int n = s.length();
+        // Use memo as Map or 5D array, but since Java, we'll use recursive with memo array
+        // States: pos (0 to n), prev (-1 to 9 -> 0-10), prev2 (-1 to 9 ->0-10), zero(0/1), tight(0/1)
+        long[][][][][] memo = new long[n + 1][12][12][2][2]; // for count
+        long[][][][][] memoW = new long[n + 1][12][12][2][2]; // for waviness
+        for (long[][][][] arr : memo) for (long[][][] arr2 : arr) for (long[][] arr3 : arr2) for (long[] arr4 : arr3) Arrays.fill(arr4, -1);
+        for (long[][][][] arr : memoW) for (long[][][] arr2 : arr) for (long[][] arr3 : arr2) for (long[] arr4 : arr3) Arrays.fill(arr4, -1);
+
+        return dp(0, -1, -1, true, true, s, memo, memoW)[1]; // return waviness
+    }
+
+    private long[] dp(int pos, int prev, int prev2, boolean zero, boolean tight, String s, 
+                      long[][][][][] memoCnt, long[][][][][] memoW) {
+        if (pos == s.length()) {
+            return new long[]{1, 0};
+        }
+        int pIdx = prev + 1; // -1 ->0, 0-9 ->1-10
+        int p2Idx = prev2 + 1;
+        int z = zero ? 1 : 0;
+        int t = tight ? 1 : 0;
+        
+        if (memoCnt[pos][pIdx][p2Idx][z][t] != -1) {
+            return new long[]{memoCnt[pos][pIdx][p2Idx][z][t], memoW[pos][pIdx][p2Idx][z][t]};
+        }
+
+        long cnt = 0;
+        long wav = 0;
+        int up = tight ? s.charAt(pos) - '0' : 9;
+        for (int d = 0; d <= up; d++) {
+            boolean newTight = tight && (d == up);
+            boolean newZero = zero && (d == 0);
+            int newPrev2 = prev;
+            int newPrev = newZero ? -1 : d;
+            long[] sub = dp(pos + 1, newPrev, newPrev2, newZero, newTight, s, memoCnt, memoW);
+            long subCnt = sub[0];
+            long subW = sub[1];
+            cnt += subCnt;
+            // Add contribution if this d forms a peak/valley with prev
+            if (!zero && prev2 != -1) {
+                if ((prev2 < prev && prev > d) || (prev2 > prev && prev < d)) {
+                    wav += subCnt;
+                }
+            }
+            wav += subW;
+        }
+        memoCnt[pos][pIdx][p2Idx][z][t] = cnt;
+        memoW[pos][pIdx][p2Idx][z][t] = wav;
+        return new long[]{cnt, wav};
+    }
+}

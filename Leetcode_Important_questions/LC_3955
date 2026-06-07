@@ -1,0 +1,40 @@
+class Solution {
+    public List<String> generateValidStrings(int n, int k) {
+        List<String> binary = new ArrayList<>();        
+        getAllBinary(binary,"",n);
+        List<String> ans = new ArrayList<>();
+        for(int i = 0;i<binary.size();i++){
+            if(isValid(binary.get(i))){
+                int cost = 0;
+                for(int j = 0;j<binary.get(i).length();j++){
+                    if(binary.get(i).charAt(j)=='1'){
+                        cost+=j;
+                    }
+                }
+                if(cost<=k){
+                    ans.add(binary.get(i));
+                }
+            }
+        }
+        return ans;
+    }
+    public boolean isValid(String s){
+        for(int i = 1;i<s.length();i++){
+            if(s.charAt(i-1)=='1' && s.charAt(i)=='1')return false;
+        }
+        return true;
+    }
+    public void getAllBinary(List<String> binary,String sb,int n){
+        if(sb.length()==n){
+            binary.add(sb);
+            return;
+        }
+        //add zero
+        getAllBinary(binary,sb+'1',n);
+        //remove zero
+        
+        //add 1
+        getAllBinary(binary,sb+'0',n);
+        return;
+    }
+}

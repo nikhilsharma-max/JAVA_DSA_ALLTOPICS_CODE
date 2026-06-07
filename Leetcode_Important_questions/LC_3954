@@ -1,0 +1,15 @@
+class Solution {
+    public int sumOfGoodIntegers(int n, int k) {
+        int start = n-k;
+        if(start<=0){
+            start=1;
+        }
+        int sum = 0;
+        for(int i = start;i<=n+k;i++){
+            if((n&i)==0){
+                sum+=i;
+            }
+        }
+        return sum;
+    }
+}

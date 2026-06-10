@@ -1,0 +1,33 @@
+class Solution {
+    public int[] countSubTrees(int n, int[][] edges, String labels) {
+        //creating graph
+        int result[] = new int[n];
+        if(edges.length==0){
+            result[0] = 1;
+            return result;
+        }
+        Map<Integer,List<Integer>> adj = new HashMap<>();
+        for(int edge[]:edges){
+            int u = edge[0];
+            int v = edge[1];
+            adj.computeIfAbsent(u,k->new ArrayList<>()).add(v);
+            adj.computeIfAbsent(v,k->new ArrayList<>()).add(u);
+        }
+        
+        int count[] = new int[26];// small letters
+        dfs(adj,0,-1,result,labels,count);
+        return result;
+    }
+    public void dfs(Map<Integer,List<Integer>> adj,int curr,int par,int result[],String labels,int count[]){
+        char myLabel = labels.charAt(curr);
+        int countBefore = count[myLabel-'a'];
+        count[myLabel-'a']++;
+        List<Integer> neigh = adj.get(curr);
+        for(int v : neigh){
+            if(v==par)continue;
+            dfs(adj,v,curr,result,labels,count);
+        }
+        int countAfter = count[myLabel-'a'];
+        result[curr] = countAfter-countBefore;
+    }
+}

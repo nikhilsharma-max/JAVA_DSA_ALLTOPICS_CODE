@@ -1,0 +1,46 @@
+class Solution {
+    public int assignEdgeWeights(int[][] edges) {
+        int n = edges.length + 1;
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int[] e : edges) {
+            map.computeIfAbsent(e[0], k -> new ArrayList<>()).add(e[1]);
+            map.computeIfAbsent(e[1], k -> new ArrayList<>()).add(e[0]);
+        }
+        
+        int MOD = 1_000_000_007;
+        boolean[] seen = new boolean[n + 1];
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(1);
+        seen[1] = true;
+        
+        int depth = 0;  // number of edges = levels - 1, but we'll count levels
+        
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                int curr = q.poll();
+                for (int nei : map.getOrDefault(curr, Collections.emptyList())) {
+                    if (!seen[nei]) {
+                        seen[nei] = true;
+                        q.offer(nei);
+                    }
+                }
+            }
+            depth++;  // after processing a level
+        }
+        
+        int d = depth - 1;  // max edges on path
+        if (d <= 0) return 0;
+        
+        // Compute 2^(d-1) % MOD
+        long ans = 1;
+        long base = 2;
+        long exp = d - 1;
+        while (exp > 0) {
+            if ((exp & 1) == 1) ans = ans * base % MOD;//exp is odd
+            base = base * base % MOD;
+            exp >>= 1;
+        }
+        return (int) ans;
+    }
+}

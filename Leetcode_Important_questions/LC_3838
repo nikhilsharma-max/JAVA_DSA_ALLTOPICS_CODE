@@ -1,0 +1,22 @@
+class Solution {
+    public String mapWordWeights(String[] words, int[] weights) {
+        Map<Character,Integer> map = new HashMap<>();//char to weight
+        for(int i = 0;i<weights.length;i++){
+            map.put((char)(i+'a'),weights[i]);
+        }
+        ArrayList<Integer> wt = new ArrayList<>();
+        for(String s : words){
+            int count = 0;
+            for(char ch : s.toCharArray()){
+                count+=map.get(ch);
+            }
+            wt.add(count%26);
+        }
+        System.out.println(wt);
+        StringBuilder sb = new StringBuilder("");
+        for(int i : wt){
+            sb.append((char)((25-i+'a')));
+        }
+        return sb.toString();
+    }
+}

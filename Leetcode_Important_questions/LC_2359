@@ -1,0 +1,55 @@
+class Solution {
+    public int closestMeetingNode(int[] edges, int node1, int node2) {
+        int n = edges.length;
+        //1st path store in set
+        // ArrayList<Integer> path1 = new ArrayList<>();
+        int path1[] = new int[n];
+        Arrays.fill(path1,Integer.MAX_VALUE);
+        int path2[] = new int[n];
+        Arrays.fill(path2,Integer.MAX_VALUE);
+        Queue<Integer> q = new LinkedList<>();
+        q.add(node1);
+        int dist = 0;
+        boolean vis[] = new boolean[n];
+        while(!q.isEmpty()){
+            int curr = q.remove();
+            path1[curr] = dist;
+            dist++;
+            vis[curr] = true;
+            if(edges[curr]!=-1){
+                if(!vis[edges[curr]]){
+                q.add(edges[curr]);
+            }
+            }
+        }
+        //creating path2
+        q = new LinkedList<>();
+        vis = new boolean[n];
+        dist = 0;
+        q.add(node2);
+        while(!q.isEmpty()){
+            int curr = q.remove();
+            path2[curr] = dist;
+            dist++;
+            vis[curr] = true;
+            if(edges[curr]!=-1){
+                if(!vis[edges[curr]]){
+            q.add(edges[curr]);
+            }
+            }
+        }
+        int ans = -1;
+        int max[] = new int[n];
+        for(int i = 0;i<path1.length;i++){
+            max[i] = Math.max(path1[i],path2[i]);
+        }
+        int min = Integer.MAX_VALUE;
+        for(int i = 0;i<max.length;i++){
+            if(max[i]<min){
+                ans = i;
+                min = max[i];
+            }
+        }
+        return ans;
+    }
+}

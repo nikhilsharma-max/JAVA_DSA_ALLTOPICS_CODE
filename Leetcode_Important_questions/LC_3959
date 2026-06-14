@@ -1,0 +1,20 @@
+class Solution {
+    public boolean checkGoodInteger(int n) {
+        ArrayList<Integer> digit = new ArrayList<>();
+        int num = n;
+        while(num>0){
+            int rem = num%10;
+            digit.add(rem);
+            num/=10;
+        }
+        int sum = 0;
+        int sqSum = 0;
+        for(int i = 0;i<digit.size();i++){
+            int curr = digit.get(i);
+            sum+=curr;
+            sqSum+=curr*curr;
+        }
+        if(sqSum-sum>=50)return true;
+        return false;
+    }
+}

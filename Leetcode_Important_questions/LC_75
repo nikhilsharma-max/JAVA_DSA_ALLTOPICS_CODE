@@ -1,0 +1,38 @@
+class Solution {
+    public void sortColors(int[] nums) {
+        // int freq[] = new int[3];
+        // for(int i= 0;i<nums.length;i++){
+        //     freq[nums[i]]++;
+        // }
+        // int idx_freq = 0;
+        // int idx=0;
+        // for(;idx_freq<3;idx_freq++){
+        //     while(freq[idx_freq]>0){
+        //         nums[idx] = idx_freq;
+        //         freq[idx_freq]--;
+        //         idx++;
+        //     } 
+        // }
+        int low = 0;
+        int mid = 0;
+        int high = nums.length-1;
+        while(mid<=high){
+            if(nums[mid]==2){
+                //swap mid and high
+                int temp = nums[mid];
+                nums[mid]=nums[high];
+                nums[high] = temp;
+                high--;
+            }else if(nums[mid]==1){
+                mid++;
+            }else if(nums[mid]==0){
+                //swap low and mid
+                int temp = nums[mid];
+                nums[mid] = nums[low];
+                nums[low] = temp;
+                low++;
+                mid++;
+            }
+        }
+    }
+}

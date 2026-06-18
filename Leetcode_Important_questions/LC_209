@@ -1,0 +1,19 @@
+import java.util.*;
+class Solution {
+    public int minSubArrayLen(int target, int[] nums) {
+        int minWin = Integer.MAX_VALUE;
+        int currSum = 0;
+        int high = 0;
+        int low = 0;
+        while(high<nums.length){
+            currSum+=nums[high];
+            high++;
+            while(currSum>=target){
+                int currWin = high-low;
+                minWin = Math.min(currWin,minWin);
+                currSum-=nums[low];low++;
+            }
+        }
+        return minWin==Integer.MAX_VALUE?0:minWin;
+    }
+}

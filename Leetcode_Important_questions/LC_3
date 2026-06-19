@@ -1,0 +1,42 @@
+import java.util.*;
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int res = 0;
+        int left = 0;
+        Map<Character,Integer> map = new HashMap<>();
+        char arr[] = s.toCharArray();
+        int right = 0;
+        for(;right<arr.length;right++){
+            int idx = map.getOrDefault(arr[right],-1);
+            if(idx!=-1 && idx>=left){
+                res = Math.max(res,right-1-left+1);
+                left = idx+1;
+            }
+            map.put(arr[right],right);
+        }
+        return Math.max(res,right-1-left+1);
+    }
+}
+
+//Sol 2 By sliding window
+import java.util.*;
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        if(s.length()==0)return 0;
+        Map<Character,Integer> map = new HashMap<>();
+        int low = 0;
+        int high = 0;
+        int ans = 1;
+        for(;high<s.length();high++){
+            map.put(s.charAt(high),map.getOrDefault(s.charAt(high),0)+1);
+            while(map.get(s.charAt(high))>1){
+                map.put(s.charAt(low),map.get(s.charAt(low))-1);
+                if(map.get(s.charAt(low))==0)map.remove(s.charAt(low));
+                low++;
+            }
+            int len = high-low+1;
+            ans = Math.max(ans,len);
+        }
+        return ans;
+    }
+}

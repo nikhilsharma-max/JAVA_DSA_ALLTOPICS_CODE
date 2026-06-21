@@ -1,0 +1,47 @@
+class Solution {
+    public class Pair{
+        int id;
+        int ht;
+        public Pair(int id,int ht){
+            this.id = id;
+            this.ht = ht;
+        }
+    }
+    public int maxBuilding(int n, int[][] restrictions) {
+        if(restrictions.length==0){
+            if(n==1 || n==0)return 0;
+            return n-1;
+        }
+        ArrayList<Pair> rest = new ArrayList<>();
+        rest.add(new Pair(1,0));
+        boolean hasLast = false;
+        for(int arr[] : restrictions){
+            rest.add(new Pair(arr[0],arr[1]));
+            if(arr[0]==n){
+                hasLast = true;
+            }
+        }
+        if(!hasLast)rest.add(new Pair(n,n-1));
+        //Sort arrayList on basis of id
+        rest.sort((a,b)->Integer.compare(a.id,b.id));
+        int m = rest.size();
+        for(int i = 1;i<m;i++){
+            int dist = rest.get(i).id - rest.get(i-1).id;
+            rest.get(i).ht = Math.min(rest.get(i-1).ht+dist,rest.get(i).ht);
+        }
+        for(int i = m-2;i>=0;i--){
+            int dist = rest.get(i+1).id-rest.get(i).id;
+            rest.get(i).ht = Math.min(rest.get(i).ht,rest.get(i+1).ht+dist);
+        }
+        long ans = 0;
+        for(int i = 1;i<m;i++){
+            long x1 = rest.get(i-1).id;
+            long h1 = rest.get(i-1).ht;
+            long x2 = rest.get(i).id;
+            long h2 = rest.get(i).ht;
+            long d = x2-x1;
+            ans = Math.max(ans,(h1+h2+d)/2);
+        }
+        return (int)ans;
+    }
+}

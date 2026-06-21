@@ -1,0 +1,32 @@
+class Solution {
+    public int characterReplacement(String s, int k) {
+        int arr[] = new int[256];
+        int low = 0,high = 0;
+        int ans = Integer.MIN_VALUE;
+        for(;high<s.length();high++){
+            //add high ki information
+            arr[s.charAt(high)-'A']++;
+            int len = high-low+1;
+            int maxFreq = findMaxFreq(arr);
+            while((len-maxFreq)>k){
+                arr[s.charAt(low)-'A']--;
+                low++;
+                len = high-low+1;
+                maxFreq = findMaxFreq(arr);
+            }
+            //correct window
+            if((len-maxFreq)<=k){
+                ans = Math.max(ans,len);
+            }
+        }
+        return ans;
+    }
+
+    public int findMaxFreq(int arr[]){
+        int max = Integer.MIN_VALUE;
+        for(int num : arr){
+            max = Math.max(num,max);
+        }
+        return max;
+    }
+}

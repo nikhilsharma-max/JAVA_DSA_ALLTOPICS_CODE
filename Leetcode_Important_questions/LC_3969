@@ -1,0 +1,20 @@
+class Solution {
+    public int countValidSubarrays(int[] nums, int x) {
+        int ans = 0;
+        int low = 0;
+        int high = 0;
+        for(int i = 0;i<nums.length;i++){
+            long sum = nums[i];
+            long lastDigit = sum%10;
+            long firstDigit = calculateFirstDigit(sum);
+            if(lastDigit==(long)x && firstDigit==(long)x){ans++;}
+            for(int j = i+1;j<nums.length;j++){
+                sum+=nums[j];
+                lastDigit = sum%10;
+                firstDigit = calculateFirstDigit(sum);
+                if(lastDigit==(long)x && firstDigit==(long)x){ans++;}
+            }
+        }
+        return ans;
+    }
+}

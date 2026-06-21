@@ -1,0 +1,26 @@
+class Solution {
+    public int maxDistance(String moves) {
+        int L = 0;
+        int R = 0;
+        int U = 0;
+        int D = 0;
+        int dash = 0;
+        for(int i = 0;i<moves.length();i++){
+            char ch = moves.charAt(i);
+            if(ch=='_'){
+                dash++;
+            }else if(ch=='L'){
+                L++;
+            }else if(ch=='R'){
+                R++;
+            }else if(ch=='U'){
+                U++;
+            }else if(ch=='D'){
+                D++;
+            }
+        }
+        int hz = Math.abs(L-R);
+        int vt = Math.abs(U-D);
+        return hz+vt+dash;
+    }
+}

@@ -1,0 +1,18 @@
+class Solution {
+    public boolean isHappy(int n) {
+        if(n==1)return true;
+        HashSet<Integer> hs = new HashSet<>();
+
+        while(true){
+            int currSq = 0;
+            while(n>0){
+                currSq += (n%10)*(n%10);
+                n/=10;
+            }
+            if(currSq==1)return true;
+            if(hs.contains(currSq))return false;
+            hs.add(currSq);
+            n = currSq;
+        }
+    }
+}

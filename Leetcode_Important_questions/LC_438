@@ -1,0 +1,36 @@
+class Solution {
+    public List<Integer> findAnagrams(String s, String p) {
+        int charP[] = new int[26];
+        for(int i = 0;i<p.length();i++){
+            charP[p.charAt(i)-'a']++;
+        }
+        int charS[] = new int[26];
+        int low = 0;
+        int high = 0;
+        List<Integer> ans = new ArrayList<>();
+        for(;high<s.length();high++){
+            charS[s.charAt(high)-'a']++;
+
+            while(extra(charS,charP) && low<=high){
+                charS[s.charAt(low)-'a']--;
+                low++;
+            }
+                        if(isSame(charS,charP)){
+                ans.add(low);
+            }
+        }
+        return ans;
+    }
+    public boolean isSame(int charS[],int charP[]){
+        for(int i =0;i<26;i++){
+            if(charS[i]!=charP[i])return false;
+        }
+        return true;
+    }
+    public boolean extra(int charS[],int charP[]){
+        for(int i =0;i<26;i++){
+            if(charS[i]>charP[i])return true;
+        }
+        return false;      
+    }
+}

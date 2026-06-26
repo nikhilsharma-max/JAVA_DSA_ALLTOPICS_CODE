@@ -1,17 +1,16 @@
 class Solution {
     public int maxProduct(int[] nums) {
-        int n = nums.length;
-        int leftProduct = 1;
-        int rightProduct = 1;
+        int maxEnd = nums[0];
+        int minEnd = nums[0];
         int ans = nums[0];
-        for(int i = 0;i<n;i++){
-            leftProduct = leftProduct==0? 1:leftProduct;
-            rightProduct = rightProduct==0? 1:rightProduct;
-            leftProduct *= nums[i];
-            rightProduct *= nums[n-i-1];
-            ans = Math.max(ans,Math.max(leftProduct,rightProduct));
+        for(int i = 1;i<nums.length;i++){
+            int v1 = nums[i];
+            int v2 = maxEnd*nums[i];
+            int v3 = minEnd*nums[i];
+            maxEnd = Math.max(v1,Math.max(v2,v3));
+            minEnd = Math.min(v1,Math.min(v2,v3));
+            ans =Math.max(ans,Math.max(maxEnd,minEnd));
         }
         return ans;
     }
-
 }

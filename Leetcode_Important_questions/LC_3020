@@ -1,0 +1,40 @@
+class Solution {
+    public int maximumLength(int[] nums) {
+        Map<Integer,Integer> map = new HashMap<>();
+        boolean allOne = true;
+        for(int num: nums){
+            if(num!=1){
+                allOne = false;
+            }
+            map.put(num,map.getOrDefault(num,0)+1);
+        }
+        if(allOne){
+            if(nums.length%2==0){
+                return nums.length-1;
+            }else{
+                return nums.length;
+            }
+        }
+        int maxAns = 1;
+        for(int i = 0;i<nums.length;i++){
+            int currNum = nums[i];
+
+            int elem = 0;
+            if(currNum!=1){for(int j = currNum; ;j = j*j){
+                if(!map.containsKey(j))break;
+                elem++;
+                if(!(map.get(j)>=2))break;
+            }}else{
+                if(map.get(currNum)%2==0){
+                    maxAns = Math.max(maxAns,map.get(currNum)-1);
+                }else{
+                    maxAns = Math.max(maxAns,map.get(currNum));
+                }
+            }
+            if(elem!=1){
+                maxAns = Math.max(maxAns,elem*2-1);
+            }
+        }
+        return maxAns;
+    }
+}

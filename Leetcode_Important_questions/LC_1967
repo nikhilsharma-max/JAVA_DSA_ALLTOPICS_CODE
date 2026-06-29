@@ -1,0 +1,32 @@
+//Solution 1
+class Solution {
+    public int numOfStrings(String[] patterns, String word) {
+        int ans = 0;
+        for(String shabd : patterns){
+            if(word.contains(shabd))ans++;
+        }
+        return ans;
+    }
+}
+
+//Solution 2
+class Solution {
+    public int numOfStrings(String[] patterns, String word) {
+        int ans = 0;
+        for(String shabd : patterns){
+            if(isSubString(shabd,word))ans++;
+        }
+        return ans;
+    }
+    public boolean isSubString(String word1,String word2){
+        StringBuilder sb2 = new StringBuilder(word2);
+        for(int i = 0;i<=word2.length()-word1.length();i++){
+            System.out.println(sb2.substring(i,i+word1.length()));
+            if(sb2.substring(i,i+word1.length()).equals(word1)){
+                
+                return true;
+            }
+        }
+        return false;
+    }
+}

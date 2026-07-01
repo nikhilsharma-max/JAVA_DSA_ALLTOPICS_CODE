@@ -1,0 +1,114 @@
+class Solution {
+    public class Pair {
+        int i;
+        int j;
+        public Pair(int i, int j) {
+            this.i = i;
+            this.j = j;
+        }
+    }
+
+    public int maximumSafenessFactor(List<List<Integer>> grid) {
+        if (grid == null || grid.isEmpty()) return 0;
+        
+        int n = grid.size();
+        if (grid.get(0).get(0) == 1 || grid.get(n-1).get(n-1) == 1) return 0; // optional optimization
+        
+        // Step 1: Multisource BFS to compute distance to nearest thief
+        int[][] distNearestThief = new int[n][n];
+        for (int[] arr : distNearestThief) {
+            Arrays.fill(arr, -1);
+        }
+        boolean[][] visited = new boolean[n][n];
+        Queue<Pair> q = new LinkedList<>();
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid.get(i).get(j) == 1) {
+                    q.add(new Pair(i, j));
+                    visited[i][j] = true;
+                    distNearestThief[i][j] = 0;
+                }
+            }
+        }
+        
+        int[][] directions = {{0,1},{1,0},{0,-1},{-1,0}};
+        int level = 0;
+        
+        while (!q.isEmpty()) {
+            int size = q.size();
+            while (size > 0) {
+                Pair curr = q.remove();
+                int curr_i = curr.i;
+                int curr_j = curr.j;
+                // dist already set when enqueued
+                
+                for (int[] dir : directions) {
+                    int new_i = curr_i + dir[0];
+                    int new_j = curr_j + dir[1];
+                    if (new_i >= 0 && new_i < n && new_j >= 0 && new_j < n 
+                        && !visited[new_i][new_j]) {
+                        visited[new_i][new_j] = true;
+                        distNearestThief[new_i][new_j] = level + 1;
+                        q.add(new Pair(new_i, new_j));
+                    }
+                }
+                size--;
+            }
+            level++;
+        }
+        
+        // Handle no thieves case (all distances remain -1 -> treat as infinite)
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (distNearestThief[i][j] == -1) {
+                    distNearestThief[i][j] = n * 2; // safe large value
+                }
+            }
+        }
+        
+        // Step 2: Binary search on safeness factor
+        int left = 0;
+        int right = n * 2; // sufficient upper bound
+        int result = 0;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (check(distNearestThief, mid, n)) {
+                result = mid;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return result;
+    }
+    
+    private boolean check(int[][] dist, int sf, int n) {
+        if (dist[0][0] < sf || dist[n-1][n-1] < sf) return false;
+        
+        boolean[][] vis = new boolean[n][n];
+        Queue<Pair> q = new LinkedList<>();
+        q.add(new Pair(0, 0));
+        vis[0][0] = true;
+        
+        int[][] directions = {{0,1},{1,0},{0,-1},{-1,0}};
+        
+        while (!q.isEmpty()) {
+            Pair curr = q.remove();
+            if (curr.i == n-1 && curr.j == n-1) return true;
+            
+            for (int[] dir : directions) {
+                int ni = curr.i + dir[0];
+                int nj = curr.j + dir[1];
+                
+                if (ni >= 0 && ni < n && nj >= 0 && nj < n 
+                    && !vis[ni][nj] && dist[ni][nj] >= sf) {
+                    vis[ni][nj] = true;
+                    q.add(new Pair(ni, nj));
+                }
+            }
+        }
+        return false;
+    }
+}

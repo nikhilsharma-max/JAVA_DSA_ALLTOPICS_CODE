@@ -1,0 +1,18 @@
+class Solution {
+    public List<List<Integer>> allPathsSourceTarget(int[][] graph) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> temp = new ArrayList<>();
+        DFS(graph,0,graph.length-1,temp,result);
+        return result;
+    }
+    public void DFS(int[][] graph,int src, int dest,List<Integer> temp,List<List<Integer>> result){
+        temp.add(src);
+        if(src==dest){
+            result.add(new ArrayList<>(temp));
+        }
+        for(int neigh : graph[src]){
+            DFS(graph,neigh,dest,temp,result);
+        }
+        temp.remove(temp.size()-1);
+    }
+}

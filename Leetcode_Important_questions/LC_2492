@@ -1,0 +1,43 @@
+class Solution {
+    public int minScore(int n, int[][] roads) {
+        // Build adjacency list: map[u] = list of [v, weight]
+        Map<Integer, List<int[]>> graph = new HashMap<>();
+        
+        for (int[] road : roads) {
+            int u = road[0];
+            int v = road[1];
+            int w = road[2];
+            
+            graph.computeIfAbsent(u, k -> new ArrayList<>()).add(new int[]{v, w});
+            graph.computeIfAbsent(v, k -> new ArrayList<>()).add(new int[]{u, w});
+        }
+        
+        // BFS from city 1
+        Queue<Integer> q = new LinkedList<>();
+        boolean[] visited = new boolean[n + 1];
+        q.offer(1);
+        visited[1] = true;
+        
+        int minScore = Integer.MAX_VALUE;
+        
+        while (!q.isEmpty()) {
+            int curr = q.poll();
+            
+            if (!graph.containsKey(curr)) continue;
+            
+            for (int[] neighbor : graph.get(curr)) {
+                int next = neighbor[0];
+                int weight = neighbor[1];
+                
+                minScore = Math.min(minScore, weight);
+                
+                if (!visited[next]) {
+                    visited[next] = true;
+                    q.offer(next);
+                }
+            }
+        }
+        
+        return minScore;
+    }
+}

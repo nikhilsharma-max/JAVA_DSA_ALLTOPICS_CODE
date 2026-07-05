@@ -1,0 +1,59 @@
+import java.util.*;
+
+class Solution {
+    public int[] pathsWithMaxScore(List<String> board) {
+        int n = board.size();
+        int MOD = 1000000007;
+        
+        // dp[i][j]: max score to reach (i,j) from S
+        int[][] dp = new int[n][n];
+        // count[i][j]: number of ways to reach with max score
+        int[][] count = new int[n][n];
+        
+        // Initialize
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        
+        // S position
+        dp[n-1][n-1] = 0;
+        count[n-1][n-1] = 1;
+        
+        int[][] directions = {{0, 1}, {1, 0}, {1, 1}}; // predecessors: right, down, down-right
+        
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = n - 1; j >= 0; j--) {
+                if (board.get(i).charAt(j) == 'S' || board.get(i).charAt(j) == 'X') {
+                    continue;
+                }
+                
+                // If already set for S, skip aggregation? But S is handled
+                if (i == n-1 && j == n-1) continue;
+                
+                // Check predecessors
+                for (int[] dir : directions) {
+                    int pi = i + dir[0]; // predecessor i
+                    int pj = j + dir[1]; // predecessor j
+                    if (pi < n && pj < n && dp[pi][pj] != -1) {
+                        if (dp[i][j] < dp[pi][pj]) {
+                            dp[i][j] = dp[pi][pj];
+                            count[i][j] = count[pi][pj];
+                        } else if (dp[i][j] == dp[pi][pj]) {
+                            count[i][j] = (count[i][j] + count[pi][pj]) % MOD;
+                        }
+                    }
+                }
+                
+                // If reachable and not E, add current cell value
+                if (dp[i][j] != -1 && board.get(i).charAt(j) != 'E') {
+                    dp[i][j] += board.get(i).charAt(j) - '0';
+                }
+            }
+        }
+        
+        if (dp[0][0] == -1) {
+            return new int[]{0, 0};
+        }
+        return new int[]{dp[0][0], count[0][0]};
+    }
+}

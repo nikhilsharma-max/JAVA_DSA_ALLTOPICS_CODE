@@ -1,0 +1,41 @@
+//Solution 01
+class Solution {
+    public long sumAndMultiply(int n) {
+        if(n==0)return 0;
+        long x = 0;
+        String s = Integer.toString(n);
+        StringBuilder sb1 = new StringBuilder("");
+        for(int i = 0;i<s.length();i++){
+            if(s.charAt(i)!='0'){
+                sb1.append(s.charAt(i));
+            }
+        }
+        long num = Integer.parseInt(sb1.toString());
+        long sum = 0;
+        long n2 = num;
+        while(n2>0){
+            sum+=n2%10;
+            n2/=10;
+        }
+        return sum*num;
+    }
+}
+
+
+Solution 02
+class Solution {
+    public long sumAndMultiply(int n) {
+        int x=0;
+        int sum=0;
+        int i=1;
+        while(n>0){
+            int m=n % 10;
+            n /=10;
+            if(m == 0) continue;
+            sum += m;
+            x += (m * i);
+            i *=10;
+        }
+        return (long) x * sum;
+    }
+}

@@ -1,0 +1,48 @@
+//Solution 1
+class Solution {
+    public boolean[] pathExistenceQueries(int n, int[] nums, int maxDiff, int[][] queries) {
+        boolean ans[] = new boolean[queries.length];
+        if(n==0)return ans;
+        int par[] = new int[n];
+        int currPar = 0;
+        for(int i = 1;i<n;i++){
+            if(Math.abs(nums[i]-nums[i-1])<=maxDiff){
+                par[i] = par[i-1];
+            }else{
+                currPar++;
+                par[i] = currPar;
+            }
+        }
+        for(int i = 0;i<ans.length;i++){
+            if(par[queries[i][0]]==par[queries[i][1]]){
+                ans[i] = true;
+            }
+        }
+        return ans;
+    }
+}
+
+
+//Solution 2
+class Solution {
+    public boolean[] pathExistenceQueries(int n, int[] nums, int maxDiff, int[][] queries) {
+        boolean ans[] = new boolean[queries.length];
+        if(n==0)return ans;
+        boolean matrix[][] = new boolean[n][n];
+        for(int i = 0;i<n;i++){
+            matrix[i][i] = true;
+        }
+        for(int i = 0;i<n;i++){
+            for(int j = i+1;j<n;j++){
+                boolean val1 = matrix[i][j-1] && (Math.abs(nums[j]-nums[j-1])<=maxDiff);
+                boolean val2 = Math.abs(nums[j]-nums[i])<=maxDiff;
+                matrix[i][j] = val1 || val2;
+                matrix[j][i] = matrix[i][j];
+            }
+        }
+        for(int i = 0;i<ans.length;i++){
+            ans[i] = matrix[queries[i][0]][queries[i][1]];
+        }
+        return ans;
+    }
+}

@@ -1,0 +1,61 @@
+import java.util.*;
+
+class Solution {
+    public int[] pathExistenceQueries(int n, int[] nums, int maxDiff, int[][] queries) {
+        Integer[] p = new Integer[n];
+        for (int i = 0; i < n; i++) {
+            p[i] = i;
+        }
+        Arrays.sort(p, (i, j) -> nums[i] - nums[j]);
+        
+        int LOG = 17; // since 2^16 = 65536 > 1e5
+        int[][] fa = new int[n][LOG];
+        
+        for (int i = 0, j = 0; i < n; i++) {
+            while (nums[p[i]] - nums[p[j]] > maxDiff) {
+                j++;
+            }
+            fa[i][0] = j;
+            for (int k = 1; k < LOG; k++) {
+                fa[i][k] = fa[fa[i][k - 1]][k - 1];
+            }
+        }
+        
+        int[] mp = new int[n];
+        for (int i = 0; i < n; i++) {
+            mp[p[i]] = i;
+        }
+        
+        int[] ans = new int[queries.length];
+        for (int qi = 0; qi < queries.length; qi++) {
+            int u = queries[qi][0];
+            int v = queries[qi][1];
+            int a = mp[u];
+            int b = mp[v];
+            if (a < b) {
+                int temp = a;
+                a = b;
+                b = temp;
+            }
+            if (a == b) {
+                ans[qi] = 0;
+                continue;
+            }
+            int s = 0;
+            for (int i = LOG - 1; i >= 0; i--) {
+                if (fa[a][i] > b) {
+                    a = fa[a][i];
+                    s |= (1 << i);
+                }
+            }
+            if (fa[a][0] > b) {
+                ans[qi] = -1;
+            } else if (a != b) {
+                ans[qi] = s + 1;
+            } else {
+                ans[qi] = s;
+            }
+        }
+        return ans;
+    }
+}

@@ -1,0 +1,20 @@
+class Solution {
+    public List<Integer> sequentialDigits(int low, int high) {
+        List<Integer> ans = new ArrayList<>();
+        Queue<Integer> q = new LinkedList<>();
+        for(int i = 1;i<9;i++){
+            q.add(i);
+        }
+        while(!q.isEmpty()){
+            int curr = q.remove();
+            if(curr>=low && curr<=high){
+                ans.add(curr);
+            }
+            if(curr%10==9)continue;
+            int lastDig = curr%10;
+            curr = curr*10+(lastDig+1);
+            q.add(curr);
+        }
+        return ans;
+    }
+}

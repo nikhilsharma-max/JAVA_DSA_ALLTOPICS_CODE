@@ -1,0 +1,44 @@
+class Solution {
+    public class Pair{
+        char ch;
+        int freq;
+        public Pair(char ch, int freq){
+            this.ch = ch;
+            this.freq = freq;
+        }
+    }
+  public String removeDuplicates(String str, int k) {
+    if (str == null || str.isEmpty()) return "";
+    
+    Stack<Pair> s = new Stack<>();
+    s.push(new Pair(str.charAt(0), 1));
+    
+    for (int i = 1; i < str.length(); i++) {
+        char c = str.charAt(i);
+        if (s.isEmpty()) {
+            s.push(new Pair(c, 1));
+            continue;
+        }
+        
+        Pair top = s.peek();
+        if (top.ch == c) {
+            if (top.freq == k - 1) {
+                s.pop();
+            } else {
+                s.pop();
+                s.push(new Pair(c, top.freq + 1));
+            }
+        } else {
+            s.push(new Pair(c, 1));
+        }
+    }
+    
+    StringBuilder sb = new StringBuilder();
+    while (!s.isEmpty()) {
+        Pair p = s.pop();
+        for (int j = 0; j < p.freq; j++) {
+            sb.append(p.ch);
+        }
+    }
+    return sb.reverse().toString();
+}}

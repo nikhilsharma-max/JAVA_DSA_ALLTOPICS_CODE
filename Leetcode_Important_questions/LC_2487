@@ -1,0 +1,55 @@
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode removeNodes(ListNode head) {
+        if(head == null || head.next == null)return head;
+        int len = 0;
+        ListNode temp = head;
+        while(temp!=null){
+            temp = temp.next;
+            len++;
+        }
+        int nums[] = new int[len];
+        temp = head;
+        for(int i = 0;i<len;i++){
+            nums[i] = temp.val;
+            temp = temp.next;
+        }
+        //calculating next greater
+        int ng[] = new int[len];
+        ng[len-1] = -1;
+        Stack<Integer> s = new Stack<>();
+        s.push(nums[len-1]);
+        for(int i = len-2;i>=0;i--){
+            while(!s.isEmpty() && s.peek()<=nums[i]){
+                s.pop();
+            }
+            if(s.isEmpty()){
+                ng[i] = -1;
+            }else{
+                ng[i] = s.peek();
+            }
+            s.push(nums[i]);
+        }
+        //prepared nextGreater array
+        //Creating linkedList
+        ListNode dummy = new ListNode(-1);
+        temp = dummy;
+        dummy.next = null;
+        for(int i = 0;i<ng.length;i++){
+            if(ng[i] != -1)continue;
+            ListNode newNode = new ListNode(nums[i]);
+            temp.next = newNode;
+            temp = newNode;
+        }
+        return dummy.next;
+    }
+}

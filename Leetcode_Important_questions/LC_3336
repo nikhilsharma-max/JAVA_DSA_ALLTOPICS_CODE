@@ -1,0 +1,86 @@
+//Solution using dp and gcd
+class Solution {
+    long MOD = 1_000_000_007L;
+    Long[][][] dp;
+
+    public int subsequencePairCount(int[] nums) {
+        int n = nums.length;
+        int maxG = 0;
+        for (int x : nums) maxG = Math.max(maxG, x);
+
+        dp = new Long[n][maxG + 1][maxG + 1];   // all cells are null by default
+
+        return (int) helper(0, 0, 0, nums);
+    }
+
+    private long helper(int idx, int gcd1, int gcd2, int[] nums) {
+        if (idx == nums.length) {
+            return (gcd1 != 0 && gcd2 != 0 && gcd1 == gcd2) ? 1L : 0L;
+        }
+
+        // Safe memoization with Long
+        if (dp[idx][gcd1][gcd2] != null) {
+            return dp[idx][gcd1][gcd2];           // auto-unboxing to long
+        }
+
+        long take1 = helper(idx + 1, gcd(gcd1, nums[idx]), gcd2, nums);
+        long take2 = helper(idx + 1, gcd1, gcd(gcd2, nums[idx]), nums);
+        long skip = helper(idx + 1, gcd1, gcd2, nums);
+
+        long res = (take1 + take2 + skip) % MOD;
+
+        dp[idx][gcd1][gcd2] = res;   // auto-boxing: long → Long
+        return res;
+    }
+
+    private int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
+}
+
+
+// class Solution {
+//     long MOD = 10_000_000_007L;
+//     Long dp[][][];
+//     public int subsequencePairCount(int[] nums) {
+//         int n = nums.length;
+//         int maxEl = Integer.MIN_VALUE;
+//         for(int i = 0;i<nums.length;i++){
+//             maxEl = Math.max(maxEl,nums[i]);
+//         }
+//         dp = new Long[n][maxEl+1][maxEl+1];
+//         // for(int i = 0;i<n;i++){
+//         //     for(Long a[] : dp[i]){
+//         //         Arrays.fill(a,-1L);
+//         //     }
+//         // }
+//         return (int)helper(0,0,0,nums);//helper(index,seq1_gcd,seq2_gcd,nums array);
+//     }
+
+//     public long helper(int idx, int gcd1,int gcd2,int nums[]){
+//         if(idx==nums.length){
+//             if((gcd1!=0 && gcd2!=0) && (gcd1==gcd2)){
+//                 return 1;
+//             }else{
+//                 return 0;
+//             }
+//         }
+//         if(dp[idx][gcd1][gcd2]!=null)return dp[idx][gcd1][gcd2].intValue();
+//         //three cases
+//         //use current number in sequence 1
+//         long take1 = helper(idx+1,gcd(gcd1,nums[idx]),gcd2,nums);
+//         //use current number in sequence 2
+//         long take2 = helper(idx+1,gcd1,gcd(gcd2,nums[idx]),nums);
+//         // skip current number
+//         long skip = helper(idx+1,gcd1,gcd2,nums);
+//         long finalVal = (take1%MOD + take2%MOD + skip%MOD)%MOD;
+//         dp[idx][gcd1][gcd2] = finalVal;
+//         return  finalVal;
+//     }
+
+//     public int gcd(int a,int b){
+//         if(b==0)return a;
+//         return gcd(b,a%b);
+//     }
+// }
+

@@ -1,0 +1,30 @@
+class Solution {
+    public long gcdSum(int[] nums) {
+        int n = nums.length;
+        int maxAr[] = new int[n];
+        maxAr[0] = nums[0];
+        for(int i = 1;i<n;i++){
+            maxAr[i] = Math.max(maxAr[i-1],nums[i]);
+        }
+        int prefixGcd[] = new int[n];
+        for(int i = 0;i<n;i++){
+            prefixGcd[i] = gcd(nums[i],maxAr[i]);
+        }
+        Arrays.sort(prefixGcd);
+        long ans = 0;
+        int i = 0;
+        int j = n-1;
+        while(i<j){
+            if(i==j)break;
+             ans+=gcd(prefixGcd[i],prefixGcd[j]);
+             i++;
+             j--;
+        }
+        return ans;
+    }
+
+    public int gcd(int a,int b){
+        if(b==0)return a;
+        return gcd(b,a%b);
+    }
+}

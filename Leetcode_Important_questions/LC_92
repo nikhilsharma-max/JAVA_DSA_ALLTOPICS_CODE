@@ -1,0 +1,28 @@
+class Solution {
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        if(head==null || head.next==null)return head;
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+        ListNode oldHead = dummy;
+        int i = 1;
+        while(i<left){
+            oldHead = oldHead.next;
+            i++;
+        }
+        ListNode revHead = oldHead.next;
+        ListNode curr = oldHead.next;
+        ListNode next = null;
+        ListNode prev = null;
+        i = 0;
+        while(i<=(right-left)){
+            i++;
+            next = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = next;
+        }
+        revHead.next = curr;
+        oldHead.next = prev;
+        return dummy.next;
+    }
+}

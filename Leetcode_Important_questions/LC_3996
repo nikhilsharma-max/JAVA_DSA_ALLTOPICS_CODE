@@ -1,0 +1,31 @@
+class Solution {
+    public class Pair{
+        int i;
+        int j;
+        int move;
+        Pair(int i,int j,int move){
+            this.i = i;
+            this.j = j;
+            this.move = move;
+        }
+    }
+    public boolean canReach(int[] start, int[] target) {
+        Queue<Pair> q =  new LinkedList<>();
+        boolean vis[][] = new boolean[8][8];
+        q.add(new Pair(start[0],start[1],0));
+        int direction[][] = {{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{1,-2},{-1,2},{-1,-2}};
+        while(!q.isEmpty()){
+            Pair curr = q.remove();
+            vis[curr.i][curr.j] = true;
+            if(curr.i==target[0] && curr.j==target[1] && curr.move%2==0)return true;
+            for(int dir[]:direction){
+                int new_i = curr.i+dir[0];
+                int new_j = curr.j+dir[1];
+                if(new_i <=7 && new_i>=0 && new_j<=7 && new_j>=0 && !vis[new_i][new_j]){
+                    q.add(new Pair(new_i,new_j,curr.move+1));
+                }
+            }
+        }
+        return false;
+    }
+}

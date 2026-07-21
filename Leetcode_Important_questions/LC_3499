@@ -1,0 +1,37 @@
+class Solution {
+    public int maxActiveSectionsAfterTrade(String s) {
+        int n = s.length();
+        if (n == 0) return 0;
+        
+        int ones = 0;
+        int maxSum = 0;
+        int prevZeros = 0;   // length of previous zero group
+        
+        int i = 0;
+        while (i < n) {
+            if (s.charAt(i) == '1') {
+                ones++;
+                i++;
+                continue;
+            }
+            
+            // Count current consecutive zeros
+            int curr = 0;
+            while (i < n && s.charAt(i) == '0') {
+                curr++;
+                i++;
+            }
+            
+            // If we have a previous zero group, we can merge them
+            // (by sacrificing the 1's group in between)
+            if (prevZeros > 0) {
+                maxSum = Math.max(maxSum, prevZeros + curr);
+            }
+            
+            // Update previous for next zero group
+            prevZeros = curr;
+        }
+        
+        return ones + maxSum;
+    }
+}

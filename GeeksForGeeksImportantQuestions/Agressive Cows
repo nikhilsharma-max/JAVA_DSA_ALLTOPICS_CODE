@@ -1,0 +1,37 @@
+class Solution {
+    public int aggressiveCows(int[] arr, int k) {
+        // code here
+        int low = Integer.MAX_VALUE;
+        int high = Integer.MIN_VALUE;
+        Arrays.sort(arr);
+        for(int num:arr){
+            low = Math.min(num,low);
+            high = Math.max(num,high);
+        }
+        high = high-low;
+        low = 1;
+        int ans = Integer.MIN_VALUE;
+        while(low<=high){
+            int mid = low+(high-low)/2;
+            if(canPlace(arr,mid,k)){
+                ans = Math.max(ans,mid);
+                low = mid+1;
+            }else{
+                high = mid-1;
+            }
+        }
+        return ans;
+    }
+    
+    public boolean canPlace(int arr[],int guess,int givenCows){
+        int cow = 1;
+        int prevPos = arr[0];
+        for(int i = 1;i<arr.length;i++){
+            if(arr[i]-prevPos>=guess){
+                cow++;
+                prevPos = arr[i];
+            }
+        }
+        return cow>=givenCows;
+    }
+}

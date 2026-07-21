@@ -1,0 +1,39 @@
+class Solution {
+    public int findPages(int[] arr, int k) {
+        // code here
+        if(arr.length<k)return -1;
+        long low = Integer.MIN_VALUE;
+        long high = 0;
+        
+        for(int num : arr){
+            low = Math.max(low,num);
+            high+=num;
+        }
+        long minPage = Integer.MAX_VALUE;
+        while(low<=high){
+            long mid = low+(high-low)/2;
+            if(canGive(arr,mid,k)){
+                minPage = (long)Math.min(minPage,mid);
+                high = mid-1;
+            }else{
+                low = mid+1;
+            }
+        }
+        return (int)minPage;
+    }
+    
+    public boolean canGive(int arr[],long mid,int students){
+        int k = 1;
+        long page = 0;
+        for(int i = 0;i<arr.length;i++){
+            if(page+(long)arr[i]<=(long)mid){
+                page+=(long)arr[i];
+            }else{
+                k++;
+                page = (long)arr[i];
+                if(k>students)return false;
+            }
+        }
+        return true;
+    }
+}

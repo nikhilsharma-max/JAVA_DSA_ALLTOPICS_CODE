@@ -1,0 +1,39 @@
+class Solution {
+    public int shipWithinDays(int[] weights, int days) {
+        int low = Integer.MIN_VALUE;
+        int high = 0;
+        for(int num: weights){
+            low = Math.max(low,num);
+            high+=num;
+        }
+        int ans = Integer.MAX_VALUE;
+        while(low<=high){
+            int wt = low+(high-low)/2;
+            if(isValidWeight(wt,weights,days)){
+                ans = Math.min(ans,wt);
+                System.out.print(ans+" ");
+                high = wt-1;
+            }else{
+                low = wt+1;
+            }
+        }
+        return ans;
+    }
+    public boolean isValidWeight(int w, int[] weights,int days){
+        int day = 1;
+        int j = 0;
+        int cap = w;
+        while(j<weights.length){
+            if(weights[j]<=cap){
+                cap-=weights[j];j++;
+            }else{
+                day++;
+                if(day>days)return false;
+                cap = w;
+                cap-=weights[j];
+                j++;
+            }
+        }
+        return day<=days;
+    }
+}

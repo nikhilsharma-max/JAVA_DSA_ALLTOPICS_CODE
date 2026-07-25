@@ -1,0 +1,41 @@
+class Solution {
+    public class Pair implements Comparable<Pair> {
+        String word;
+        int freq;
+        public Pair(String word, int freq) {
+            this.word = word;
+            this.freq = freq;
+        }
+        public int compareTo(Pair p2) {
+            if (this.freq == p2.freq) {
+                // Larger word is "worse" → comes first in min-heap
+                return p2.word.compareTo(this.word);
+            }
+            // Lower frequency is "worse" → comes first in min-heap
+            return this.freq - p2.freq;
+        }
+    }
+    public List<String> topKFrequent(String[] words, int k) {
+        Map<String, Integer> map = new HashMap<>();
+        for (String word : words) {
+            map.put(word, map.getOrDefault(word, 0) + 1);
+        }
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+        for (String key : map.keySet()) {
+            Pair newPair = new Pair(key, map.get(key));
+            if (pq.size() < k) {
+                pq.offer(newPair);
+            } else if (newPair.compareTo(pq.peek()) > 0) {
+                // newPair is better than the current worst → replace
+                pq.poll();
+                pq.offer(newPair);
+            }
+        }
+        List<String> ans = new ArrayList<>();
+        while (!pq.isEmpty()) {
+            ans.add(pq.poll().word);
+        }
+        Collections.reverse(ans);   // now highest frequency first, then lex smaller
+        return ans;
+    }
+}

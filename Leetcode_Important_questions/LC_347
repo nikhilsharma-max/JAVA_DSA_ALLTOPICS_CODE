@@ -1,31 +1,38 @@
 class Solution {
     public class Pair implements Comparable<Pair>{
-        int num;
+        int ele;
         int freq;
-        public Pair(int num,int freq){
-            this.num = num;
+        public Pair(int ele,int freq){
+            this.ele = ele;
             this.freq = freq;
         }
-        @Override
+
         public int compareTo(Pair p2){
-            return p2.freq-this.freq;
+            if(this.freq == p2.freq){
+                return this.ele-p2.ele;
+            }
+            return this.freq-p2.freq;
         }
     }
     public int[] topKFrequent(int[] nums, int k) {
-        Arrays.sort(nums);
+        //Store in Map<ele,freq>
+        Map<Integer,Integer> map = new HashMap<>();
         PriorityQueue<Pair> pq = new PriorityQueue<>();
-        for(int i = 0;i<nums.length;i++){
-            int freq = 1;
-            while(i<nums.length-1 && (nums[i]==nums[i+1])){
-                freq++;
-                i++;
+        for(int n:nums){
+            map.put(n,map.getOrDefault(n,0)+1);
+        }
+        for(int key : map.keySet()){
+            if(pq.size()<k){
+                pq.add(new Pair(key,map.get(key)));
+                continue;
             }
-            pq.add(new Pair(nums[i],freq));
+            if(map.get(key)<pq.peek().freq)continue;
+            pq.remove();
+            pq.add(new Pair(key,map.get(key)));
         }
         int ans[] = new int[k];
         for(int i = 0;i<k;i++){
-            Pair curr = pq.remove();
-            ans[i] = curr.num;
+            ans[i] = pq.remove().ele;
         }
         return ans;
     }

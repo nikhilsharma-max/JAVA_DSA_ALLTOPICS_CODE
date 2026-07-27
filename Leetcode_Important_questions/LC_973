@@ -1,0 +1,39 @@
+class Solution {
+    public class Pair implements Comparable<Pair>{
+        int dist;
+        int idx;
+        public Pair(int dist,int idx){
+            this.dist = dist;
+            this.idx = idx;
+        }
+        public int compareTo(Pair p2){
+            return p2.dist-this.dist;
+        }
+    }
+    public int[][] kClosest(int[][] points, int k) {
+        //HashMap
+        Map<Integer,Integer> map =new HashMap<>();//(i,dist)
+        for(int i = 0;i<points.length;i++){
+            int d = points[i][0]*points[i][0]+points[i][1]*points[i][1];
+            map.put(i,d);
+        }
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+        for(int key : map.keySet()){
+            if(pq.size()<k){
+                pq.add(new Pair(map.get(key),key));
+            }else if(pq.peek().dist>map.get(key)){
+                pq.remove();
+                pq.add(new Pair(map.get(key),key));
+            }
+        }
+        int i = 0;
+        int arr[][] = new int[k][2];
+        while(!pq.isEmpty()){
+            Pair curr = pq.remove();
+            arr[i][0] = points[curr.idx][0];
+            arr[i][1] = points[curr.idx][1];
+            i++;
+        }
+        return arr;
+    }
+}

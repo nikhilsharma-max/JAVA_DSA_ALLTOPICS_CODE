@@ -1,0 +1,49 @@
+class Solution {
+    //solution by using mix of heap(max) and greedy
+    public class Pair implements Comparable<Pair>{
+        int freq;
+        char ch;
+        public Pair(int freq,char ch){
+            this.freq = freq;
+            this.ch = ch;
+        }
+        public int compareTo(Pair p2){
+            if(this.freq!=p2.freq){
+                return p2.freq-this.freq;
+            }
+            return p2.ch-this.ch;
+        }
+    }
+    public String reorganizeString(String s) {
+        PriorityQueue<Pair> pq =new PriorityQueue<>();
+        Map<Character,Integer> map  = new HashMap<>();
+        for(char ch : s.toCharArray()){
+            map.put(ch,map.getOrDefault(ch,0)+1);
+        }
+        for(char ch: map.keySet()){
+            pq.add(new Pair(map.get(ch),ch));
+        }
+        StringBuilder ans = new StringBuilder();
+        int seat = 0;
+        while(!pq.isEmpty()){
+            Pair curr = pq.remove();
+            if(seat==0 || ans.charAt(seat-1)!=curr.ch){
+                ans.append(curr.ch);
+                seat++;
+                if(curr.freq-1 != 0){
+                    pq.add(new Pair(curr.freq-1,curr.ch));
+                }
+            }else{
+                if(pq.isEmpty())return "";
+                Pair p2 = pq.remove();
+                ans.append(p2.ch);
+                seat++;
+                if(p2.freq-1 != 0){
+                    pq.add(new Pair(p2.freq-1,p2.ch));
+                }
+                pq.add(new Pair(curr.freq,curr.ch));
+            }
+        }
+        return ans.toString();
+    }
+}

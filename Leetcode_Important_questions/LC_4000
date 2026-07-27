@@ -1,0 +1,32 @@
+class Solution {
+    public int largestInteger(int n, int s) {
+        if(s<0 ||s > n*9)return -1;
+        int arr[] = new int[n];
+        Arrays.fill(arr,0);
+        int i = 0;
+        while(s>0){
+            if(s>=9){
+                arr[i] = 9;
+                s = s-9;
+                i++;
+            }else{
+                arr[i] = s;
+                s = 0;
+               //break;
+                i++;
+            }
+            if(i>=n && s!=0)return -1;
+        }
+        int num = 0;
+        for(int j = 0;j<arr.length;j++){
+            System.out.print(arr[j]+" ");
+        }
+        for(int j = 0;j<arr.length;j++){
+            num+= arr[j]*Math.pow(10,arr.length-j-1);
+            // if(arr[j] ==0){
+            //     num*=10;
+            // }
+        }
+        return num;
+    }
+}

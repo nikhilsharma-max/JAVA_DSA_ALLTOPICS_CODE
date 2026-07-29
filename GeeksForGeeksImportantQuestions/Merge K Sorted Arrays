@@ -1,0 +1,31 @@
+class Solution {
+    public class Info implements Comparable<Info>{
+        int val;
+        int row;
+        int col;
+        public Info(int val,int row,int col){
+            this.val = val;
+            this.row = row;
+            this.col = col;
+        }
+        public int compareTo(Info i2){
+            return this.val - i2.val;
+        }
+    }
+    public ArrayList<Integer> mergeArrays(int[][] mat) {
+        // Code here
+        PriorityQueue<Info> pq = new PriorityQueue<>();
+        ArrayList<Integer> ans = new ArrayList<>();
+        for(int i = 0;i<mat.length;i++){
+            pq.add(new Info(mat[i][0],i,0));//(value,arr_0,coln_0)
+        }
+        while(!pq.isEmpty()){
+            Info curr = pq.remove();
+            ans.add(curr.val);
+            if(curr.col+1<mat[curr.row].length){
+                pq.add(new Info(mat[curr.row][curr.col+1],curr.row,curr.col+1));
+            }
+        }
+        return ans;
+    }
+}

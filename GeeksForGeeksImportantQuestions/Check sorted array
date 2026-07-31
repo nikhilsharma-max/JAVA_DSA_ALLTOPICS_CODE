@@ -1,0 +1,11 @@
+class Solution {
+    public boolean isSorted(int[] arr) {
+        // code here
+        return checkSorted(arr,0,arr.length);
+    }
+    public boolean checkSorted(int arr[],int idx,int n){
+        if(idx==n || idx==n-1)return true;
+        if(arr[idx]>arr[idx+1])return false;
+        return checkSorted(arr,idx+1,n);
+    }
+}

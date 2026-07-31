@@ -1,0 +1,11 @@
+class Solution {
+    boolean isPalindrome(String s) {
+        // code here
+        return checkPalin(s,0);
+    }
+    boolean checkPalin(String s,int idx){
+        if(idx>s.length()/2)return true;
+        if(checkPalin(s,idx+1) && s.charAt(idx)==s.charAt(s.length()-idx-1))return true;
+        return false;
+    }
+}

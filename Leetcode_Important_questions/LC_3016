@@ -1,0 +1,27 @@
+class Solution {
+    public int minimumPushes(String word) {
+        int ans = 0;
+        int n = word.length();
+        int freq[] = new int[26];
+        for(char ch : word.toCharArray()){
+            freq[ch-'a']++;
+        }
+        freq = Arrays.stream(freq)
+                            .boxed()
+                            .sorted(Collections.reverseOrder())
+                            .mapToInt(Integer::intValue)
+                            .toArray();
+
+        for(int i = 0;i<8;i++){
+            ans+=freq[i];
+        }
+        for(int i = 8;i<16;i++){
+            ans+=2*freq[i];
+        }
+        for(int i = 16;i<24;i++){
+            ans+=3*freq[i];
+        }
+        ans+=4*(freq[24]+freq[25]);
+        return ans;
+    }
+}

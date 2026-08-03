@@ -1,0 +1,41 @@
+class Solution {
+    public int[] countTasks(int[] tasks, int[] shifts) {
+        int n = tasks.length;
+        long[] presum = new long[n];
+        presum[0] = tasks[0];
+        for (int i = 1; i < n; i++) {
+            presum[i] = presum[i - 1] + tasks[i];
+        }
+        long total = presum[n - 1];
+
+        long workdone = 0;
+        int[] ans = new int[shifts.length];
+        int idx = 0;
+
+        for (int x : shifts) {
+            workdone += x;
+
+            if (workdone >= total) {
+                ans[idx++] = 0;
+                workdone = 0;               // <-- the missing reset
+            } else {
+                ans[idx++] = check(presum, workdone);
+            }
+        }
+        return ans;
+    }
+
+    private int check(long[] presum, long workdone) {
+        int n = presum.length;
+        int l = 0, r = n - 1;
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (presum[mid] > workdone) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return n - l;   // number of unfinished tasks
+    }
+}

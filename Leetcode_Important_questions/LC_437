@@ -1,0 +1,77 @@
+//Solution 01
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    int ans = 0;
+    public int pathSum(TreeNode root, int targetSum) {
+        if(root==null)return 0;
+        double sum = 0;
+        funCheck(root,targetSum,sum);
+        pathSum(root.left,targetSum);
+        pathSum(root.right,targetSum);
+        return ans;
+    }
+    public void funCheck(TreeNode root,int target,double sum){
+        if(root==null)return;
+        sum+=root.val;
+        //if(root.left==null && root.right==null){
+            if(sum==target)ans++;
+        //}
+        funCheck(root.left,target,sum);
+        funCheck(root.right,target,sum);
+        return;
+    }
+}
+
+
+//Solution 02
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    int total = 0;
+    public int pathSum(TreeNode root, int targetSum) {
+        if(root==null)return 0;
+        HashMap<Double,Integer> map = new HashMap<>();
+        map.put((double)0,1);
+        funCheck(root,0,targetSum,map);
+        return total;
+        
+    }
+    public void funCheck(TreeNode root,double sum,int target,HashMap<Double,Integer> hm){
+        if(root==null)return;
+        sum+=root.val;
+        if(hm.containsKey(sum-target))
+            total+=hm.get(sum-target);
+            hm.put(sum,hm.getOrDefault(sum,0)+1);
+            funCheck(root.left,sum,target,hm);
+            funCheck(root.right,sum,target,hm);
+            hm.put(sum,hm.get(sum)-1);
+        return;
+    }
+}

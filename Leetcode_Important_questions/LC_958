@@ -1,0 +1,45 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public boolean isCompleteTree(TreeNode root) {
+        if(root==null)return true;
+        Queue<TreeNode> q = new LinkedList<>();
+        q.add(root);
+        int level = -1;
+        int power[] = new int[100];
+        power[0] = 1;
+        for(int i = 1;i<100;i++){
+            power[i] = power[i-1]*2;
+        }
+        while(!q.isEmpty()){
+            int size = q.size();
+            int currSize = size;
+            level++;
+            boolean noRight = false;
+            while(size>0){
+                size--;
+                TreeNode curr = q.remove();
+                if(noRight && (curr.left!=null || curr.right!=null))return false;
+                if(curr.right==null)noRight = true;
+                if(curr.left==null && curr.right!=null)return false;
+                if(currSize<power[level] && (curr.left!=null || curr.right!=null))return false;
+                if(curr.left!=null)q.add(curr.left);
+                if(curr.right!=null)q.add(curr.right);
+            }
+        }
+        return true;
+    }
+}

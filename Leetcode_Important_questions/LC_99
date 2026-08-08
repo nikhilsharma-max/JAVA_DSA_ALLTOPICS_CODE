@@ -1,3 +1,5 @@
+//Solution 1: Using inorder traversal and checking if the array is sorted or not
+
 /**
  * Definition for a binary tree node.
  * public class TreeNode {
@@ -35,5 +37,68 @@ class Solution {
         prev = root;
         inorder(root.right);
         
+    }
+}
+
+
+//Solution 2
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    TreeNode prev = null;
+    TreeNode g1First, g1Second, g2First, g2Second = null;
+    int galat = 0;
+
+    public void recoverTree(TreeNode root) {
+        inorder(root);
+
+        // Swap only once after complete traversal
+        if (galat == 1) {
+            int temp = g1First.val;
+            g1First.val = g1Second.val;
+            g1Second.val = temp;
+        } else if (galat == 2) {
+            int temp = g1First.val;
+            g1First.val = g2Second.val;
+            g2Second.val = temp;
+        }
+    }
+
+    private void inorder(TreeNode root) {
+        if (root == null) return;
+
+        inorder(root.left);
+
+        if (prev == null) {
+            prev = root;
+        } else {
+            if (root.val < prev.val) { // galati
+                if (galat == 0) {
+                    g1First = prev;
+                    g1Second = root;
+                    galat++;
+                } else {
+                    g2First = prev;
+                    g2Second = root;
+                    galat++;
+                }
+            }
+            prev = root;
+        }
+
+        inorder(root.right);
     }
 }

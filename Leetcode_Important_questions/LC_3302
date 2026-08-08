@@ -1,0 +1,35 @@
+class Solution {
+    public int[] validSequence(String word1, String word2) {
+        int n = word1.length();
+        int m = word2.length();
+        int[] last = new int[m];
+        Arrays.fill(last,-1);
+        int word2Index = m-1;
+        for(int word1Index = n-1;word1Index>=0 && word2Index>=0;word1Index--){
+            if(word1.charAt(word1Index)==word2.charAt(word2Index)){
+                last[word2Index] = word1Index;
+                word2Index--;
+            }
+        }
+        int result[] = new int[m];
+        boolean used = false;
+        word2Index = 0;
+        for(int word1Index=0;word1Index<n && word2Index<m; word1Index++){
+            char currentChar = word1.charAt(word1Index);
+            char required = word2.charAt(word2Index);
+            //char match
+            boolean characterMatch = currentChar==required;
+            // we can use our one allowed modification
+            boolean canUseChange = !used &&(word2Index==m-1 || word1Index<last[word2Index+1]);
+            if(characterMatch || canUseChange){
+                result[word2Index] = word1Index;
+                if(!characterMatch) used = true;
+                word2Index++;
+            }
+        }
+        if(word2Index<m){
+            return new int[0];
+        }
+        return result;
+    }
+}

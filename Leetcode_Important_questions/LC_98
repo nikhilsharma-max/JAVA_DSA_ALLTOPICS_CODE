@@ -12,3 +12,43 @@ class Solution {
                validate(node.right, node.val, max);
     }
 }
+
+//solution 2
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+ import java.util.*;
+class Solution {
+    TreeNode prev = null;
+    boolean ans = true;
+    public boolean isValidBST(TreeNode root) {
+        if(root==null)return true;
+        valid(root);
+        return ans;
+    }
+    public void valid(TreeNode root){
+        isValidBST(root.left);
+        if(prev==null){
+            prev = root;
+        }else{
+            if(prev.val<root.val){
+                prev = root;
+            }else{
+                ans = false;
+            }
+        }
+        isValidBST(root.right);       
+    }
+}

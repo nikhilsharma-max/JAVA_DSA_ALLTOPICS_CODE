@@ -1,0 +1,61 @@
+class Solution {
+    public class Info implements Comparable<Info>{
+        int node;
+        int wt;
+        public Info(int node,int wt){
+            this.node = node;
+            this.wt = wt;
+        }
+        @Override
+        public int compareTo(Info i2){
+            return this.wt-i2.wt;
+        }
+    }
+    public class Pair{
+        int node;
+        int wt;
+        public Pair(int node,int wt){
+            this.node = node;
+            this.wt = wt;
+        }
+    }
+    public ArrayList<Integer> dijkstra(int V, int[][] edges, int src) {
+        // code here
+        PriorityQueue<Info> pq = new PriorityQueue<>();
+        pq.add(new Info(src,0));
+        boolean vis[] = new boolean[V];
+        int ans[] = new int[V];
+        Arrays.fill(ans,Integer.MAX_VALUE);
+        ans[src] = 0;
+        //make adj list
+        ArrayList<Pair> graph[] = new ArrayList[V];
+        for(int i = 0;i<V;i++){
+            graph[i] = new ArrayList<>();
+        }
+        for(int ed[]:edges){
+            graph[ed[0]].add(new Pair(ed[1],ed[2]));
+            graph[ed[1]].add(new Pair(ed[0],ed[2]));
+        }
+        while(!pq.isEmpty()){
+            Info curr = pq.remove();
+            int u = curr.node;
+            if (curr.wt > ans[u]) continue;          // stale entry
+            vis[u]=true;
+            ArrayList<Pair> neigh = graph[curr.node];
+            if(neigh!=null || neigh.size()!=0)
+            for(Pair n : neigh){
+                int v = n.node;
+                            int wt = n.wt;
+            if (ans[u] != Integer.MAX_VALUE && ans[u] + wt < ans[v]) {
+                ans[v] = ans[u] + wt;
+                if (!vis[v]) {
+                    pq.add(new Info(v, ans[v]));
+                }
+            }
+            }
+        }
+        ArrayList<Integer> a = new ArrayList<>();
+        for(int i = 0;i<ans.length;i++)a.add(ans[i]);
+        return a;
+    }
+}

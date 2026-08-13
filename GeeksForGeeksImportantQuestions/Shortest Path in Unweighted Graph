@@ -1,0 +1,37 @@
+class Solution {
+    public int shortestPath(int V, int[][] edges, int src, int dest) {
+        // code here
+        boolean vis[] = new boolean[V];
+        ArrayList<Integer> graph[] = new ArrayList[V];
+        for(int i =0;i<V;i++){
+            graph[i] = new ArrayList<>();
+        }
+        Queue<Integer>q = new LinkedList<>();
+        int ans = 0-1;
+        for(int ed[]:edges){
+            graph[ed[0]].add(ed[1]);
+            graph[ed[1]].add(ed[0]);
+        }
+        q.add(src);
+        vis[src] = true;
+        while(!q.isEmpty()){
+            int size = q.size();
+            ans++;
+            while(size>0){
+                size--;
+                int curr = q.remove();
+                vis[curr] = true;
+                if(curr==dest)return ans;
+                //push all neigh to queue
+                ArrayList<Integer> neigh = graph[curr];
+                if(neigh!=null || neigh.size()!=0)
+                for(int n:neigh){
+                    if(!vis[n])
+                    q.add(n);
+                }
+            }
+
+        }
+        return -1;
+    }
+}

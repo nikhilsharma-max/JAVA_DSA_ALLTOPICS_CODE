@@ -1,0 +1,56 @@
+class Solution {
+    public class Info implements Comparable<Info> {
+        int node;
+        int dist;
+        public Info(int node,int dist){
+            this.node = node;
+            this.dist = dist;
+        }
+        @Override
+        public int compareTo(Info i2){
+            return this.dist-i2.dist;
+        }
+    }
+    public class Pair{
+        int node;
+        int wt;
+        public Pair(int node,int wt){
+            this.node = node;
+            this.wt = wt;
+        }
+    }
+    public int networkDelayTime(int[][] times, int n, int k) {
+        PriorityQueue<Info> pq = new PriorityQueue<>();
+        ArrayList<Pair> graph[] = new ArrayList[n+1];
+        for(int i = 1;i<n+1;i++){
+            graph[i] = new ArrayList<Pair>();
+        }
+        //Building graph
+        for(int ed[]:times){
+            graph[ed[0]].add(new Pair(ed[1],ed[2]));
+        }
+        pq.add(new Info(k,0));
+        int result[] = new int[n+1];
+        Arrays.fill(result,Integer.MAX_VALUE);
+        result[k] = 0;
+        //result[0] = 0;
+        while(!pq.isEmpty()){
+            Info curr = pq.remove();
+            int d = curr.dist;
+            int node = curr.node;
+            if(d>result[node])continue;
+            List<Pair> list = graph[node];
+            if(list!=null && list.size()!=0)
+            for(Pair i : list){
+                if(result[i.node]==Integer.MAX_VALUE || result[i.node]>i.wt+result[node]){
+                    result[i.node] = i.wt+result[node];
+                    pq.add(new Info(i.node,result[i.node]));
+                }
+            }
+        }
+        int max = Integer.MIN_VALUE;
+        for(int i :result)System.out.print(i+" ");
+        for(int i=1;i<result.length;i++)max = Math.max(max,result[i]);
+        return max==Integer.MAX_VALUE?-1:max;
+    }
+}

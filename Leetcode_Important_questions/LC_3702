@@ -1,0 +1,57 @@
+// Method 1: Recursion + Memoization
+
+class Solution {
+    int maxLen = 0;
+    int dp[];
+    public int longestSubsequence(int[] nums) {
+        dp = new int[nums.length+1];
+         if(completeZero(nums))return 0;
+        
+        Arrays.fill(dp,-1);
+        funRec(0,nums,0,0);
+        return maxLen;
+    }
+    public void funRec(int i,int[] nums,int len,int xVal){
+        if(i>=nums.length){
+            if(xVal!=0){
+                maxLen = Math.max(maxLen,len);
+            }
+            //dp[]
+            return;
+        }
+        if(dp[i]!=-1){
+            maxLen = Math.max(maxLen,dp[i]);
+            return;
+        }
+        //include current idx
+        int newXVal = xVal^nums[i];
+        funRec(i+1,nums,len+1,newXVal);
+        //don't include current idx
+        funRec(i+1,nums,len,xVal);
+        dp[i]=len;
+        return;
+    }
+    public boolean completeZero(int nums[]){
+        //boolean zer = true;
+        for(int i:nums){
+            if(i!=0){return false;}
+        }
+        return true;
+    }
+}
+
+
+//Method 2: Simple logic
+class Solution {
+    public int longestSubsequence(int[] nums) {
+        boolean allZero = true;
+        int xor = 0;
+        for(int i:nums){
+            xor^=i;
+            if(i!=0)allZero = false;
+        }
+        if(xor!=0)return nums.length;
+        if(xor==0 && allZero)return 0;
+        return nums.length-1;
+    }
+}

@@ -1,0 +1,43 @@
+class Solution {
+    public int swimInWater(int[][] grid) {
+        int low = grid[0][0];
+        int high = Integer.MIN_VALUE;
+        for(int g[]:grid){
+            for(int i:g){
+                high = Math.max(high,i);
+            }
+        }
+        int ans = high;
+        while(low<=high){
+            int mid = low+(high-low)/2;
+            if(canReach(mid,grid)){
+                ans = mid;
+                high = mid-1;
+            }else{
+                low = mid+1;
+            }
+        }
+        return ans;
+        }
+    private boolean canReach(int mid, int[][] grid) {
+        int n = grid.length;
+        if (grid[0][0] > mid) return false;
+        boolean[][] vis = new boolean[n][n];
+        return dfs(0, 0, mid, grid, vis);
+    }
+
+    private boolean dfs(int i, int j, int mid, int[][] grid, boolean[][] vis) {
+        int n = grid.length;
+        if (i == n-1 && j == n-1) return true;
+        vis[i][j] = true;
+        int[][] dirs = {{0,1},{1,0},{0,-1},{-1,0}};
+        for (int[] d : dirs) {
+            int ni = i + d[0], nj = j + d[1];
+            if (ni >= 0 && nj >= 0 && ni < n && nj < n
+                && !vis[ni][nj] && grid[ni][nj] <= mid) {
+                if (dfs(ni, nj, mid, grid, vis)) return true;
+            }
+        }
+        return false;
+    }
+}

@@ -1,0 +1,53 @@
+import java.util.*;
+
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        // Put all words into a HashSet for O(1) lookup
+        Set<String> wordSet = new HashSet<>(wordList);
+        if (!wordSet.contains(endWord)) {
+            return 0;
+        }
+
+        // Queue for BFS
+        Queue<String> queue = new LinkedList<>();
+        // HashMap: word -> distance (length of sequence from beginWord)
+        Map<String, Integer> distance = new HashMap<>();
+
+        queue.offer(beginWord);
+        distance.put(beginWord, 1);   // beginWord itself counts as 1
+
+        while (!queue.isEmpty()) {
+            String current = queue.poll();
+            int currDist = distance.get(current);
+
+            // Try changing every character position
+            char[] chars = current.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                char original = chars[i];
+
+                // Try every possible letter a-z
+                for (char c = 'a'; c <= 'z'; c++) {
+                    if (c == original) continue;
+
+                    chars[i] = c;
+                    String nextWord = new String(chars);
+
+                    // Found the endWord
+                    if (nextWord.equals(endWord)) {
+                        return currDist + 1;
+                    }
+
+                    // Valid unvisited word in the dictionary
+                    if (wordSet.contains(nextWord) && !distance.containsKey(nextWord)) {
+                        queue.offer(nextWord);
+                        distance.put(nextWord, currDist + 1);
+                    }
+                }
+                // Restore the original character
+                chars[i] = original;
+            }
+        }
+
+        return 0; // No path found
+    }
+}

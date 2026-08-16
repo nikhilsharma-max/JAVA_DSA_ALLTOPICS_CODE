@@ -1,0 +1,20 @@
+class Solution {
+    public int minPenalty(int period, int[] lights, int[] arrivalTime) {
+        int r[] = new int[arrivalTime.length];
+        int maxTime = Integer.MIN_VALUE;
+        for(int i:lights)maxTime = Math.max(maxTime,i);
+        for(int i = 0;i<arrivalTime.length;i++){
+            r[i] = arrivalTime[i]%period;
+            if(r[i]>=maxTime){
+                r[i] = period-r[i];
+            }else{
+                r[i] = 0;
+            }
+        }
+        int ans = Integer.MIN_VALUE;
+        for(int i:r)ans = Math.max(ans,i);
+        
+        
+        return ans;
+    }
+}

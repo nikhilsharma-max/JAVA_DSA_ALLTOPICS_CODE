@@ -1,0 +1,17 @@
+class Solution {
+
+    public int nearestDrone(int[][] drones, int[] target) {
+        int idx = Integer.MAX_VALUE;
+        int d = Integer.MAX_VALUE;
+        for(int i = 0;i<drones.length;i++){
+            int dist = Math.abs(target[0]-drones[i][0])+Math.abs(target[1]-drones[i][1]);
+            if(dist<=drones[i][2]){
+                if(dist<d){
+                    idx = i;
+                    d = dist;
+                }
+            }
+        }
+        return idx==Integer.MAX_VALUE?-1:idx;
+    }
+}

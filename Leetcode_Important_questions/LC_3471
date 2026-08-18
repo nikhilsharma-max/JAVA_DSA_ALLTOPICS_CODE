@@ -1,0 +1,23 @@
+class Solution {
+    public int largestInteger(int[] nums, int k) {
+        int freq[] = new int[51];
+        int max = Integer.MIN_VALUE;
+        for(int i:nums){freq[i]++;max = Math.max(max,i);}
+        if(k>=2 && k!=nums.length){
+            int ans1=Integer.MIN_VALUE,ans2=Integer.MIN_VALUE;
+            if(freq[nums[nums.length-1]]==1)ans1 = nums[nums.length-1];
+            if(freq[nums[0]]==1)ans2=nums[0];
+            if(ans1!=Integer.MIN_VALUE || ans2!=Integer.MIN_VALUE)return Math.max(ans1,ans2);
+        }
+        int ans = Integer.MIN_VALUE;
+        if(k==1){
+            for(int i = 0;i<freq.length;i++){
+                if(freq[i]==1)ans = Math.max(ans,i);
+            }
+            return ans==Integer.MIN_VALUE?-1:ans;
+        }else if(k==nums.length){
+            return max;
+        }
+return -1;
+    }
+}

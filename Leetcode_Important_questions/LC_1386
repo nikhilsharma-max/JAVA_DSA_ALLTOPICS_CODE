@@ -1,0 +1,42 @@
+class Solution {
+    public int maxNumberOfFamilies(int n, int[][] reservedSeats) {
+        Map<Integer,ArrayList<Integer>> map = new HashMap<>(); 
+        for(int rs[]:reservedSeats){
+            map.computeIfAbsent(rs[0],k-> new ArrayList<>()).add(rs[1]);
+        }
+        int totalFreeRows = n-map.size();
+        int ans = (totalFreeRows*2);
+        System.out.print(ans);
+        for(ArrayList<Integer> list : map.values()){
+            int g1 = 1;
+            int g2 = 1;
+            int g3 = 1;
+            for(int i:list){
+                if(i==2 || i==3){
+                    g1--;
+                }else if(i==4 || i==5){
+                    g1--;
+                    g2--;
+                }else if(i==6 || i ==7){
+                    g2--;
+                    g3--;
+                }else if(i==8 || i==9){
+                    g3--;
+                }   
+            }
+            g1 = g1==1?1:0;
+            g2 = g2==1?1:0;
+            g3 = g3==1?1:0;
+            if(g1==1 && g2==1 && g3==1){
+                ans+=2;
+            }else if((g1==1 && g2==1) || (g2==1 && g3==1)){
+                ans++;
+            }else{
+                ans += (g1+g2+g3);
+            }
+            
+        }
+        
+        return ans;
+    }
+}

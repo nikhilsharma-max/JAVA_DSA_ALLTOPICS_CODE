@@ -1,0 +1,59 @@
+class Solution {
+    public long findKthSmallest(int[] coins, int k) {
+        List<Long>[] sizeToLcms = getSizeToLcms(coins);
+        long left = 1;
+        long right = (long) k * Arrays.stream(coins).min().getAsInt();
+
+        while (left < right) {
+            long mid = left + (right - left) / 2;
+            if (count(sizeToLcms, mid) >= k) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+
+    // Number of distinct amounts <= m
+    private long count(List<Long>[] sizeToLcms, long m) {
+        long res = 0;
+        for (int sz = 1; sz < sizeToLcms.length; sz++) {
+            for (long lcm : sizeToLcms[sz]) {
+                // Inclusion-Exclusion: + for odd size, - for even size
+                res += (m / lcm) * ((sz % 2 == 1) ? 1 : -1);
+            }
+        }
+        return res;
+    }
+
+    // Precompute LCM of every non-empty subset, grouped by subset size
+    private List<Long>[] getSizeToLcms(int[] coins) {
+        int n = coins.length;
+        int maxMask = 1 << n;
+        @SuppressWarnings("unchecked")
+        List<Long>[] sizeToLcms = new List[n + 1];
+        for (int i = 0; i <= n; i++) {
+            sizeToLcms[i] = new ArrayList<>();
+        }
+
+        for (int mask = 1; mask < maxMask; mask++) {
+            long lcmVal = 1;
+            for (int i = 0; i < n; i++) {
+                if ((mask & (1 << i)) != 0) {
+                    lcmVal = lcm(lcmVal, coins[i]);
+                }
+            }
+            sizeToLcms[Integer.bitCount(mask)].add(lcmVal);
+        }
+        return sizeToLcms;
+    }
+
+    private long lcm(long a, long b) {
+        return a / gcd(a, b) * b;   // avoid overflow
+    }
+
+    private long gcd(long a, long b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
+}

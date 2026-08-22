@@ -1,0 +1,29 @@
+class Solution {
+    int dp[][];
+    public int minCost(int n, int[] cuts) {
+        
+        List<Integer> list = new ArrayList<>();
+        list.add(0);
+        for(int i = 0;i<cuts.length;i++){
+            list.add(cuts[i]);
+        }
+        list.add(n);
+        //list.sort();
+        Collections.sort(list);
+        dp = new int[list.size()][list.size()];
+        for(int d[]:dp)Arrays.fill(d,-1);
+        return fun(list,1,list.size()-2);
+    }
+
+    public int fun(List<Integer> list,int i, int j){
+        if(i>j)return 0;
+        if(dp[i][j]!=-1)return dp[i][j];
+        int res = Integer.MAX_VALUE;
+        for(int k=i;k<=j;k++){
+            int cost = list.get(j+1)-list.get(i-1);
+            int r = cost+fun(list,i,k-1)+fun(list,k+1,j);
+            res = Math.min(res,r);
+        }
+        return dp[i][j]=res;
+    }
+}

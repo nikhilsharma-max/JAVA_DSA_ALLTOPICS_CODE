@@ -1,0 +1,27 @@
+class Solution {
+    int dp[][][];
+    public int maxProfit(int[] prices) {
+        dp = new int[prices.length+1][3][3];
+        for(int d[][]:dp){
+            for(int ar[]:d){
+                Arrays.fill(ar,-1);
+            }
+        }
+        return fun(prices,0,2,2);//(prrices,int i,int k,int transactions)
+    }
+
+    public int fun(int[] prices,int i, int k, int trans){
+        if(trans==0 || i==prices.length)return 0;
+        if(dp[i][k][trans]!=-1)return dp[i][k][trans];
+        if(k==2){
+            //buy or move on
+            int c1 = fun(prices,i+1,k-1,trans)-prices[i];
+            int c2 = fun(prices,i+1,k,trans);
+            return dp[i][k][trans]=Math.max(c1,c2);
+        }else{
+            int c1 = fun(prices,i+1,2,trans-1)+prices[i];
+            int c2 = fun(prices,i+1,k,trans);
+            return dp[i][k][trans]=Math.max(c1,c2);
+        }
+    }
+}

@@ -1,0 +1,40 @@
+// Method one by Memoization(DP)
+class Solution {
+    int dp[][];
+    public int maxProfit(int[] prices) {
+        dp = new int[prices.length+1][3];
+        for(int d[]:dp){
+            Arrays.fill(d,-1);
+        }
+        return fun(prices,0,2);
+    }
+    public int fun(int[] prices, int i, int k){
+        if(i==prices.length)return 0;
+        if(dp[i][k]!=-1)return dp[i][k];
+        if(k==2){
+            //can buy or move on
+            int c1 = fun(prices, i+1,k-1)-prices[i];//buy
+            int c2 = fun(prices,i+1,k);//move free
+            return dp[i][k] = Math.max(c1,c2);
+        }else{
+            // can sell or move on
+            int c1 = fun(prices,i+1,2)+prices[i];//sell
+            int c2 = fun(prices,i+1,k);//move free
+            return dp[i][k] = Math.max(c1,c2);
+        }
+    }
+}
+
+
+//Method two -- basic logic
+class Solution {
+    public int maxProfit(int[] prices) {
+        int profit = 0;
+        for(int i = 1; i < prices.length ; i++){
+            if(prices[i] > prices[i-1]){
+                profit += prices[i]-prices[i-1];
+            }
+        }
+        return profit;
+    }
+} 

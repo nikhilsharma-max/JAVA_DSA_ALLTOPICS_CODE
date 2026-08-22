@@ -1,0 +1,25 @@
+import java.util.*;
+class Solution {
+    int dp[][];
+    public int maxProfit(int[] prices) {
+        dp = new int[prices.length][3];
+        for(int d[]:dp){
+            Arrays.fill(d,-1);
+        }
+        return fun(prices,0,2);//(prices,i,k), k is number of transactions(2)
+    }
+
+    public int fun(int[] prices,int i,int k){
+        if(k==0||i==prices.length)return 0;
+        if(dp[i][k]!=-1)return dp[i][k];
+        if(k==2){
+            int c1 = fun(prices,i+1,k-1)-prices[i];//buy stock reduces money
+            int c2 = fun(prices,i+1,k);//let the day empty
+            return dp[i][k]=Math.max(c1,c2);
+        }else{
+            int c1 = fun(prices,i+1,k-1)+prices[i];//sell stock increases money
+            int c2 = fun(prices,i+1,k);//let the day empty
+            return dp[i][k]=Math.max(c1,c2);
+        }
+    }
+}

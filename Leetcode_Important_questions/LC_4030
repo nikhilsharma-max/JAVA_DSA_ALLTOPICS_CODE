@@ -1,0 +1,13 @@
+class Solution {
+    public boolean isPalindromic(String s) {
+        StringBuilder sb = new StringBuilder("");
+        
+        for(char ch:s.toCharArray()){
+            String bi = String.format("%8s",Integer.toBinaryString((int)ch)).replace(' ','0');
+            sb.append(bi);
+        }
+        System.out.print(sb);
+        return sb.toString().contentEquals(sb.reverse());
+     //   return true;
+    }
+}

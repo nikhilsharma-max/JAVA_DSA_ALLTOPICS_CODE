@@ -1,0 +1,16 @@
+class Solution {
+    public int stoneGameVIII(int[] stones) {
+        int prefixSum[] = new int[stones.length];
+        prefixSum[0] = stones[0];
+        for(int i = 1;i<stones.length;i++){
+            prefixSum[i] = prefixSum[i-1]+stones[i];
+        }
+
+        int bu[] = new int[stones.length+1];
+        bu[prefixSum.length-1] = prefixSum[prefixSum.length-1];
+        for(int i = prefixSum.length-2;i>=1;i--){
+            bu[i] = Math.max(prefixSum[i]-bu[i+1],bu[i+1]);
+        }
+        return bu[1];
+    }
+}

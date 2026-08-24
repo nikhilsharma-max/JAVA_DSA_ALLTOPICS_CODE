@@ -1,0 +1,26 @@
+class Solution {
+    int dp[][];
+    public int minDifficulty(int[] jobDifficulty, int d) {
+        if(jobDifficulty.length<d)return -1;
+        dp = new int[jobDifficulty.length+1][d+1];
+        for(int dt[]:dp)Arrays.fill(dt,-1);
+        return solve(0,d,jobDifficulty);
+    }
+
+    public int solve(int i, int d,int[] jd){
+        if(d==1){
+            int m = Integer.MIN_VALUE;
+            for(int idx = i;idx<jd.length;idx++)m = Math.max(m,jd[idx]);
+            return m;
+        }
+        if(dp[i][d]!=-1) return dp[i][d];
+        int maxD = jd[i];
+        int finalRes = Integer.MAX_VALUE;
+        for(int idx = i;idx<=jd.length-d;idx++){
+            maxD = Math.max(maxD,jd[idx]);
+            int result = maxD + solve(idx+1,d-1,jd);
+            finalRes = Math.min(finalRes,result);
+        }
+        return dp[i][d]=finalRes;
+    }
+}

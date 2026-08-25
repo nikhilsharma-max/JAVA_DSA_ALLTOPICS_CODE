@@ -1,0 +1,36 @@
+class Solution {
+    public int minReorder(int n, int[][] connections) {
+        List<List<Integer>> graph[] = new ArrayList[n];
+        for(int i = 0;i<n;i++){
+            graph[i] = new ArrayList<>();
+        }
+        for(int c[]:connections){
+            List<Integer> l1 = new ArrayList<>();
+            l1.add(c[1]);
+            l1.add(1);
+            graph[c[0]].add(new ArrayList<>(l1));
+            List<Integer> l2 = new ArrayList<>();
+            l2.add(c[0]);
+            l2.add(0);
+            graph[c[1]].add(new ArrayList<>(l2));            
+        }
+        boolean vis[] = new boolean[n];
+        int ans = 0;
+        Queue<Integer> q = new LinkedList<>();
+        q.add(0);
+        while(!q.isEmpty()){
+            int curr = q.remove();
+            vis[curr] = true;
+            // go to all non vis neigh of curr
+            List<List<Integer>> neigh = graph[curr];
+            if(neigh!=null && neigh.size()!=0)
+                for(List<Integer> ne:neigh){
+                    if(!vis[ne.get(0)]){
+                        q.add(ne.get(0));
+                        if(ne.get(1)==1)ans++;
+                    }
+                }
+        }
+        return ans;
+    }
+}

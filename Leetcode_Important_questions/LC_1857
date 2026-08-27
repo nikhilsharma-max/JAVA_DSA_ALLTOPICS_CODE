@@ -1,0 +1,37 @@
+class Solution {
+    public int largestPathValue(String colors, int[][] edges) {
+        int n = colors.length();
+        List<Integer> adj[] = new ArrayList[n];
+        for(int i = 0;i<n;i++)adj[i] = new ArrayList<>();
+        int indeg[] = new int[n];
+        for(int ed[]:edges){
+            adj[ed[0]].add(ed[1]);
+            indeg[ed[1]]++;
+        }
+        Queue<Integer> q = new LinkedList<>();
+        int[][] t = new int[n][26];
+        for(int i = 0;i<n;i++){
+            if(indeg[i] == 0){
+                q.add(i);
+                t[i][colors.charAt(i)-'a'] = 1;
+            }
+        }
+        int ans=0,countOfNodes=0;
+        while(!q.isEmpty()){
+            int curr = q.remove();
+            countOfNodes++;
+            ans = Math.max(ans,t[curr][colors.charAt(curr)-'a']);
+            List<Integer> neigh = adj[curr];
+            if(neigh!=null || neigh.size()!=0)
+            for(int v:neigh){
+                for(int i = 0;i<26;i++){
+                    t[v][i]= Math.max(t[v][i],t[curr][i]+(colors.charAt(v)-'a'==i?1:0)); 
+                }
+                indeg[v]--;
+                if(indeg[v]==0)q.add(v);
+            }
+        }
+        if(countOfNodes<n)return -1;
+        return ans;
+    }
+}

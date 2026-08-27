@@ -1,0 +1,32 @@
+class Solution {
+    StringBuilder result;
+    public String lexGreaterPermutation(String s, String target) {
+        result = new StringBuilder("");
+        StringBuilder curr = new StringBuilder("");
+        int count[] = new int[26];
+        for(char ch:s.toCharArray())count[ch-'a']++;
+        solve(curr,count,target,0,false);
+        return result.toString();
+    }
+
+    boolean solve(StringBuilder curr,int[] count,String target,int i,boolean greater){
+        if(i==target.length()){
+            if(greater){
+                result = new StringBuilder(curr);
+                return true;
+            }else{
+                return false;
+            }
+        }
+        for(char ch = 'a';ch<='z';ch++){
+            if(count[ch-'a']==0 || (!greater && ch<target.charAt(i)))continue;
+            curr.append(ch);
+            count[ch-'a']--;
+            boolean isGreater = ch>target.charAt(i)||greater;
+            if(solve(curr,count,target,i+1,isGreater))return true;
+            curr.deleteCharAt(curr.length() - 1);
+            count[ch-'a']++;
+        }
+        return false;
+    }
+}

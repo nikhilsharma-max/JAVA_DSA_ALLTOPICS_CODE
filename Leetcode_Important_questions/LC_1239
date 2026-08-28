@@ -1,0 +1,50 @@
+class Solution {
+    int maxLen = 0;
+
+    public int maxLength(List<String> arr) {
+        int n = arr.size();
+        if (n == 0) return 0;
+        int[] freq = new int[26];
+        StringBuilder sb = new StringBuilder();
+        solve(freq, arr, 0, sb);
+        return maxLen;
+    }
+
+    public void solve(int[] freq, List<String> arr, int i, StringBuilder sb) {
+        if (i == arr.size()) {
+            maxLen = Math.max(maxLen, sb.length());
+            return;
+        }
+        // Don't take the current string
+        solve(freq, arr, i + 1, sb);
+        // Take the current string (only if it is valid)
+        String curr = arr.get(i);
+        if (allUnique(freq, curr)) {
+            // Take
+            sb.append(curr);
+            for (char ch : curr.toCharArray()) {
+                freq[ch - 'a']++;
+            }
+            solve(freq, arr, i + 1, sb);
+            // Backtrack
+            sb.delete(sb.length() - curr.length(), sb.length());
+            for (char ch : curr.toCharArray()) {
+                freq[ch - 'a']--;
+            }
+        }
+    }
+
+    public boolean allUnique(int[] freq, String curr) {
+        boolean[] seen = new boolean[26];   
+        // to detect duplicates inside curr
+        for (char ch : curr.toCharArray()) {
+            int idx = ch - 'a';
+            // already used in previous strings OR duplicate inside current string
+            if (freq[idx] != 0 || seen[idx]) {
+                return false;
+            }
+            seen[idx] = true;
+        }
+        return true;
+    }
+}

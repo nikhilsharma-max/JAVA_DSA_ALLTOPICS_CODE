@@ -1,0 +1,92 @@
+class Solution {
+    public String lexPalindromicPermutation(String s, String target) {
+        int n = s.length();
+        int[] cnt = new int[26];
+        for (char c : s.toCharArray()) {
+            cnt[c - 'a']++;
+        }
+        
+        // Check if a palindromic permutation is possible
+        int oddCount = 0;
+        for (int c : cnt) {
+            if (c % 2 != 0) oddCount++;
+        }
+        if (oddCount > 1) return "";
+        
+        // For odd length, find and temporarily remove the middle character
+        int mid = -1;
+        if (n % 2 == 1) {
+            for (int i = 0; i < 26; i++) {
+                if (cnt[i] % 2 == 1) {
+                    mid = i;
+                    cnt[i]--;
+                    break;
+                }
+            }
+        }
+        
+        // Try to match the prefix of target as much as possible
+        StringBuilder half = new StringBuilder();
+        boolean exactMatchPossible = true;
+        for (int i = 0; i < n / 2; i++) {
+            int c = target.charAt(i) - 'a';
+            cnt[c] -= 2;
+            half.append(target.charAt(i));
+            if (cnt[c] < 0) {
+                exactMatchPossible = false;
+                break;
+            }
+        }
+        
+        if (exactMatchPossible) {
+            // Build candidate by matching target prefix + middle (if odd)
+            StringBuilder result = new StringBuilder(half);
+            if (n % 2 == 1) {
+                result.append((char) ('a' + mid));
+            }
+            // Mirror the first half
+            result.append(new StringBuilder(half).reverse());
+            
+            if (result.toString().compareTo(target) > 0) {
+                return result.toString();
+            }
+            // If equal or not greater, remove middle and try to increment later
+            if (n % 2 == 1) {
+                result.setLength(result.length() - 1 - half.length()); // remove middle + reverse part? Wait, better rebuild
+            }
+        }
+        
+        // Backtrack: find the rightmost position where we can increment
+        while (half.length() > 0) {
+            int c = half.charAt(half.length() - 1) - 'a';
+            half.deleteCharAt(half.length() - 1);
+            cnt[c] += 2; // restore the two occurrences
+            
+            // Try next larger character
+            for (int next = c + 1; next < 26; next++) {
+                if (cnt[next] >= 2) {
+                    cnt[next] -= 2;
+                    half.append((char) ('a' + next));
+                    
+                    // Fill the remaining positions of the first half with smallest possible characters
+                    for (int j = 0; j < 26; j++) {
+                        while (cnt[j] >= 2) {
+                            cnt[j] -= 2;
+                            half.append((char) ('a' + j));
+                        }
+                    }
+                    
+                    // Build the full palindrome
+                    StringBuilder res = new StringBuilder(half);
+                    if (n % 2 == 1) {
+                        res.append((char) ('a' + mid));
+                    }
+                    res.append(new StringBuilder(half).reverse());
+                    return res.toString();
+                }
+            }
+        }
+        
+        return "";
+    }
+}

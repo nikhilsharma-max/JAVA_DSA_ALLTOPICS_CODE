@@ -1,0 +1,25 @@
+class Solution {
+    public int countSpecialIntegers(int[] nums) {
+        Map<Integer,int[]> map = new HashMap<>();
+        for(int i = 0;i<nums.length;i++){
+            int x = nums[i];
+            if(!map.containsKey(x)){
+                map.put(x,new int[]{i,i,1});
+            }else{
+                int[] info = map.get(x);
+                info[1] = i;
+                info[2]++;
+            }
+        }
+        int ans = 0;
+        for(int[] info:map.values()){
+            int first = info[0];
+            int last = info[1];
+            int count = info[2];
+            if(last-first+1==count){
+                ans++;
+            }
+        }
+        return ans;
+    }
+}

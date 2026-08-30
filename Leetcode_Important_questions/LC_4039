@@ -1,0 +1,26 @@
+class Solution {
+    static final long mod = 1_000_000_007L;
+    public int sumDecoded(long[] nums) {
+        long ans = 0;
+        for(long num:nums){
+            int width = (int)(num%10);
+            long d = num/10;
+            String s = String.valueOf(d);
+            long x = Long.parseLong(s.substring(0,width));
+            long y = Long.parseLong(s.substring(width));
+            ans = ((ans+power(x,y))%mod);
+        }
+        return (int)ans;
+    }
+    private long power(long x,long y){
+        long ans = 1;
+        while(y>0){
+            if(y%2==1){
+                ans = (ans*x)%mod;
+            }
+            x = (x*x)%mod;
+            y/=2;
+        }
+        return ans;
+    }
+}

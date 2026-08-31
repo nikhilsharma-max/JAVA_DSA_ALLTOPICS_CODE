@@ -1,0 +1,62 @@
+import java.util.*;
+
+class Solution {
+    public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
+        // Build the graph: variable -> {neighbor -> weight}
+        // edge A -> B with weight w means A / B = w
+        Map<String, Map<String, Double>> graph = new HashMap<>();
+        
+        for (int i = 0; i < equations.size(); i++) {
+            String a = equations.get(i).get(0);
+            String b = equations.get(i).get(1);
+            double val = values[i];
+            
+            graph.putIfAbsent(a, new HashMap<>());
+            graph.putIfAbsent(b, new HashMap<>());
+            
+            graph.get(a).put(b, val);       // a / b = val
+            graph.get(b).put(a, 1.0 / val); // b / a = 1/val
+        }
+        
+        double[] result = new double[queries.size()];
+        
+        for (int i = 0; i < queries.size(); i++) {
+            String start = queries.get(i).get(0);
+            String end = queries.get(i).get(1);
+            
+            if (!graph.containsKey(start) || !graph.containsKey(end)) {
+                result[i] = -1.0;
+            } else if (start.equals(end)) {
+                result[i] = 1.0;
+            } else {
+                result[i] = dfs(graph, start, end, new HashSet<>());
+            }
+        }
+        
+        return result;
+    }
+    
+    // Returns the value of start / end, or -1.0 if impossible
+    private double dfs(Map<String, Map<String, Double>> graph, 
+                       String curr, String target, Set<String> visited) {
+        if (curr.equals(target)) {
+            return 1.0;
+        }
+        
+        visited.add(curr);
+        
+        for (Map.Entry<String, Double> neighbor : graph.get(curr).entrySet()) {
+            String next = neighbor.getKey();
+            double weight = neighbor.getValue();
+            
+            if (!visited.contains(next)) {
+                double res = dfs(graph, next, target, visited);
+                if (res != -1.0) {
+                    return weight * res;  // curr / target = (curr / next) * (next / target)
+                }
+            }
+        }
+        
+        return -1.0;
+    }
+}

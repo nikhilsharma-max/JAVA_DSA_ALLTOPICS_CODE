@@ -1,0 +1,72 @@
+class Solution {
+    public int minMoves(String[] classroom, int energy) {
+        int m = classroom.length, n = classroom[0].length();
+        int[][] litterId = new int[m][n];
+        int startX = 0, startY = 0, litterCount = 0;
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                char c = classroom[i].charAt(j);
+                if (c == 'S') {
+                    startX = i;
+                    startY = j;
+                } else if (c == 'L') {
+                    litterId[i][j] = litterCount++;
+                }
+            }
+        }
+
+        if (litterCount == 0) {
+            return 0;
+        }
+
+        // vis[x][y][remainingEnergy][mask] where mask = remaining litters (bits set)
+        boolean[][][][] vis = new boolean[m][n][energy + 1][1 << litterCount];
+        List<int[]> queue = new ArrayList<>();
+        int fullMask = (1 << litterCount) - 1;
+
+        queue.add(new int[]{startX, startY, energy, fullMask});
+        vis[startX][startY][energy][fullMask] = true;
+
+        int[] dirs = {-1, 0, 1, 0, -1};
+        int steps = 0;
+
+        while (!queue.isEmpty()) {
+            List<int[]> currentLevel = queue;
+            queue = new ArrayList<>();
+
+            for (int[] state : currentLevel) {
+                int x = state[0], y = state[1], curEnergy = state[2], mask = state[3];
+
+                if (mask == 0) {
+                    return steps;
+                }
+                if (curEnergy <= 0) {
+                    continue; // cannot move further
+                }
+
+                for (int k = 0; k < 4; k++) {
+                    int nx = x + dirs[k];
+                    int ny = y + dirs[k + 1];
+
+                    if (nx >= 0 && nx < m && ny >= 0 && ny < n && classroom[nx].charAt(ny) != 'X') {
+                        int nextEnergy = (classroom[nx].charAt(ny) == 'R') ? energy : curEnergy - 1;
+                        int nextMask = mask;
+
+                        if (classroom[nx].charAt(ny) == 'L') {
+                            nextMask &= ~(1 << litterId[nx][ny]); // collect litter
+                        }
+
+                        if (!vis[nx][ny][nextEnergy][nextMask]) {
+                            vis[nx][ny][nextEnergy][nextMask] = true;
+                            queue.add(new int[]{nx, ny, nextEnergy, nextMask});
+                        }
+                    }
+                }
+            }
+            steps++;
+        }
+
+        return -1;
+    }
+}

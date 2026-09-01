@@ -1,0 +1,42 @@
+class Solution {
+    public int maximumDetonation(int[][] bombs) {
+        int maxDetonation = 1;
+        int n = bombs.length;
+        //boolean checked[] = new boolean[n];// ith bomb ko detonate krkr dekh liya ki nhi
+        for(int i = 0;i<n;i++){
+            boolean vis[] = new boolean[n];
+            maxDetonation = Math.max(maxDetonation,checkBFS(i,bombs,vis));
+        }
+        return maxDetonation;
+    }
+    public int checkBFS(int idx, int[][] bombs, boolean[] vis) {
+        int maxD = 0;
+        Queue<Integer> q = new LinkedList<>();
+        
+        q.add(idx);
+        vis[idx] = true;                 // mark immediately when adding
+
+        while (!q.isEmpty()) {
+            int curr = q.remove();
+            maxD++;
+
+            int[] currBomb = bombs[curr];
+            long r2 = (long) currBomb[2] * currBomb[2];   // avoid overflow
+
+            for (int i = 0; i < bombs.length; i++) {
+                if (vis[i]) continue;
+
+                int[] next = bombs[i];
+                long dx = (long) next[0] - currBomb[0];
+                long dy = (long) next[1] - currBomb[1];
+                long dist = dx * dx + dy * dy;
+
+                if (dist <= r2) {
+                    vis[i] = true;       // mark when enqueueing
+                    q.add(i);
+                }
+            }
+        }
+        return maxD;
+    }
+}

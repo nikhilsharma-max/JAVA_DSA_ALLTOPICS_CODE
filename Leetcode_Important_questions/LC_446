@@ -1,0 +1,28 @@
+class Solution {
+    public int numberOfArithmeticSlices(int[] nums) {
+        int n = nums.length;
+        Map<Long, Integer>[] dp = new Map[n];
+        Arrays.setAll(dp, k -> new HashMap<>());
+        
+        int ans = 0;
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                long diff = (long) nums[i] - nums[j];
+                
+                int count = dp[j].getOrDefault(diff, 0);
+                
+                // Every weak arithmetic subsequence ending at j with this diff
+                // can be extended by nums[i] → forms a valid subsequence of length ≥ 3
+                ans += count;
+                
+                // Update dp[i]: 
+                // + count  → all the extended subsequences
+                // + 1      → the new length-2 pair (nums[j], nums[i])
+                dp[i].merge(diff, count + 1, Integer::sum);
+            }
+        }
+        
+        return ans;
+    }
+}

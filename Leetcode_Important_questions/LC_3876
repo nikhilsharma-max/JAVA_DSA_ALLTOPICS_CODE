@@ -1,0 +1,38 @@
+class Solution {
+    public boolean uniformArray(int[] nums1) {
+        if (allEvenOrOdd(nums1)) return true;
+        return canConvert(nums1);
+    }
+
+    public boolean allEvenOrOdd(int[] arr) {
+        boolean allEven = true;
+        boolean allOdd = true;
+        for (int n : arr) {
+            if (n % 2 == 0) {
+                allOdd = false;
+            } else {
+                allEven = false;
+            }
+        }
+        return allEven || allOdd;
+    }
+
+    public boolean canConvert(int[] nums) {
+        // Find the minimum odd number
+        int minOdd = Integer.MAX_VALUE;
+        for (int n : nums) {
+            if (n % 2 != 0) {
+                minOdd = Math.min(minOdd, n);
+            }
+        }
+
+        // If no odd numbers exist, the array is already all even (handled by allEvenOrOdd)
+        // For mixed arrays: we can make everything odd only if every even number >= minOdd
+        for (int n : nums) {
+            if (n % 2 == 0 && n < minOdd) {
+                return false;
+            }
+        }
+        return true;
+    }
+}

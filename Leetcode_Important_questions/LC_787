@@ -1,0 +1,87 @@
+class Solution {
+    // public class Info implements Comparable<Info>{
+    //     int node;
+    //     int cost;
+    //     int stop;
+    //     public Info(int node,int cost, int stop){
+    //         this.node = node;
+    //         this.cost = cost;
+    //         this.stop = stop;
+    //     }
+    //     @Override
+    //     public int compareTo(Info i2){
+    //         if(this.stop == i2.stop){
+    //             return this.cost-i2.cost;
+    //         }
+    //         return this.stop - i2.stop;
+    //     }
+    // }
+    public class Pair{
+        int node;
+        int cost;
+        public Pair(int node,int cost){
+            this.node = node;
+            this.cost = cost;
+        }
+    }
+    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
+        ArrayList<ArrayList<Integer>> graph[] = new ArrayList[n];
+        for(int i = 0;i<n;i++){
+            graph[i] = new ArrayList<>();
+        }
+        for(int fl[]:flights){
+            ArrayList<Integer> list = new ArrayList<>();
+            list.add(fl[1]);
+            list.add(fl[2]);
+            graph[fl[0]].add(list);
+        }
+        int dist[] = new int[n];
+        Arrays.fill(dist,Integer.MAX_VALUE);
+        dist[src] = 0;
+        // PriorityQueue<Info> pq = new PriorityQueue<>();
+        // pq.add(new Info(src,0,0));
+        // //int minCostPossible = Integer.MAX_VALUE;
+        // int minCost = Integer.MAX_VALUE;
+        // while(!pq.isEmpty()){
+        //     Info curr = pq.remove();
+        //     if(curr.node == dst && curr.stop<=k+1 && curr.cost<minCost){
+        //         minCost = curr.cost;
+        //     }else if(curr.stop>k){
+        //         continue;
+        //     }else{
+        //         ArrayList<ArrayList<Integer>> neigh = graph[curr.node];
+        //         if(neigh!=null && neigh.size()!=0)
+        //         for(ArrayList<Integer> ne:neigh){
+        //             pq.add(new Info(ne.get(0),curr.cost+ne.get(1),curr.stop+1));
+        //         }
+        //     }   
+        // }
+        // if(minCost!=Integer.MAX_VALUE)return minCost;
+        // return -1;
+        Queue<Pair> q = new LinkedList<>();
+        q.add(new Pair(src,0));
+        int steps = 0;
+        while(!q.isEmpty() && steps<=k){
+            int N = q.size();
+            while(N-- >0){
+                Pair curr = q.remove();
+                int u = curr.node;
+                int d = curr.cost;
+                ArrayList<ArrayList<Integer>> neigh = graph[curr.node];
+                if(neigh!=null && neigh.size()!=0)
+                    for(ArrayList<Integer> ne:neigh){
+                        int v = ne.get(0);
+                        int cost = ne.get(1);
+                        if(dist[v]>d+cost){
+                            dist[v] = d+cost;
+                            q.add(new Pair(v,d+cost));
+                        }
+                    }   
+            }
+            steps++;
+        }
+            if(dist[dst]==Integer.MAX_VALUE)return -1;
+    return dist[dst];
+    }
+
+}

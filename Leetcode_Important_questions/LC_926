@@ -1,0 +1,19 @@
+class Solution {
+    public int minFlipsMonoIncr(String s) {
+        int n = s.length();
+        int ones = 0;          // number of '1's seen so far (in the left part)
+        int flips = 0;         // minimum flips needed so far
+
+        for (char c : s.toCharArray()) {
+            if (c == '1') {
+                ones++;
+            } else {
+                // Current '0' could stay as part of the left (0s) or be flipped to '1'
+                // flips = min( keep it as 0 by flipping previous 1s if needed,
+                //              or flip this 0 to 1 )
+                flips = Math.min(ones, flips + 1);
+            }
+        }
+        return flips;
+    }
+}

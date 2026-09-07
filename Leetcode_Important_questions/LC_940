@@ -1,0 +1,22 @@
+class Solution {
+    public int distinctSubseqII(String s) {
+        int MOD = 1_000_000_007;
+        Map<Character, Integer> map = new HashMap<>();
+        int n = s.length();
+        int[] dp = new int[n + 1];
+        dp[0] = 1;                      
+        
+        for (int i = 0; i < n; i++) {
+            dp[i + 1] = (int) ((2L * dp[i]) % MOD);
+            
+            char c = s.charAt(i);
+            if (map.containsKey(c)) {
+                dp[i + 1] = (dp[i + 1] - dp[map.get(c)] % MOD + MOD) % MOD;
+            }
+            map.put(c, i);               
+        }
+        
+        
+        return (dp[n] - 1 + MOD) % MOD;
+    }
+}

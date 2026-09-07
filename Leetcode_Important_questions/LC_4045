@@ -1,0 +1,39 @@
+class Solution {
+    public int countGroups(int[] position, int[] speed, int distance) {
+        int n = position.length;
+        
+        // Step 1: Collapse initial merges at t = 0
+        // Each maximal contiguous block with consecutive gaps ≤ distance
+        // is represented by its rightmost robot.
+        java.util.List<int[]> groups = new java.util.ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            // Start a new group or merge into the previous one
+            if (groups.isEmpty() || position[i] - groups.get(groups.size() - 1)[0] > distance) {
+                groups.add(new int[]{position[i], speed[i]});
+            } else {
+                // Merge: keep the rightmost robot's position and speed
+                groups.get(groups.size() - 1)[0] = position[i];
+                groups.get(groups.size() - 1)[1] = speed[i];
+            }
+        }
+        
+        // Step 2: Scan the resulting groups from right to left
+        // Maintain the speed of the nearest surviving group to the right.
+        // A faster group will eventually catch up and merge.
+        // A group with speed ≤ the right group's speed stays separate.
+        int count = 0;
+        int rightSpeed = Integer.MAX_VALUE;
+        
+        for (int i = groups.size() - 1; i >= 0; i--) {
+            int curSpeed = groups.get(i)[1];
+            if (curSpeed <= rightSpeed) {
+                // Cannot catch the group ahead → forms a new final group
+                count++;
+                rightSpeed = curSpeed;
+            }
+            // else: curSpeed > rightSpeed → will catch up and merge (do nothing)
+        }
+        
+        return count;
+    }
+}

@@ -1,0 +1,25 @@
+class Solution {
+    int[] ticketDays = {1, 7, 30};
+    Integer[][] memo;   
+
+    public int mincostTickets(int[] days, int[] costs) {
+        memo = new Integer[days.length][400];
+        return solve(days, costs, 0, 0);
+    }
+
+    private int solve(int[] days, int[] costs, int idx, int activeUpto) {
+        if (idx >= days.length) return 0;
+
+        if (memo[idx][activeUpto] != null) return memo[idx][activeUpto];
+        if (days[idx] <= activeUpto) {
+            return memo[idx][activeUpto] = solve(days, costs, idx + 1, activeUpto);
+        }
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < costs.length; i++) {
+            int newActive = days[idx] + ticketDays[i] - 1; 
+            min = Math.min(min, costs[i] + solve(days, costs, idx + 1, newActive));
+        }
+
+        return memo[idx][activeUpto] = min;
+    }
+}

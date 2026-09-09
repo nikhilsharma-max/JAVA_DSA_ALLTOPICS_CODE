@@ -1,0 +1,19 @@
+class Solution {
+    int dp[][];
+    public int maxSatisfaction(int[] satisfaction) {
+        dp = new int[satisfaction.length+1][satisfaction.length+2];
+        Arrays.sort(satisfaction);
+        for(int d[]:dp)Arrays.fill(d,-1);
+        return solve(satisfaction,0,1); // (array,idx,time)
+    }
+
+    public int solve(int nums[],int idx,int time){
+        if(idx>=nums.length)return 0;
+        if(dp[idx][time]!=-1)return dp[idx][time];
+        //take this idx
+        int ans1 = nums[idx]*time + solve(nums,idx+1,time+1);
+        //don't take
+        int ans2 = solve(nums,idx+1,time);
+        return dp[idx][time]=Math.max(ans1,ans2);
+    }
+}

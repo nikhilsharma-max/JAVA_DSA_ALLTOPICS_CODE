@@ -1,0 +1,30 @@
+class Solution {
+    public List<String> findItinerary(List<List<String>> tickets) {
+        // Graph: airport -> min-heap of destinations
+        Map<String, PriorityQueue<String>> graph = new HashMap<>();
+
+        for (List<String> ticket : tickets) {
+            graph.computeIfAbsent(ticket.get(0), k -> new PriorityQueue<>())
+                 .offer(ticket.get(1));
+        }
+
+        LinkedList<String> itinerary = new LinkedList<>();
+        dfs("JFK", graph, itinerary);
+        return itinerary;
+    }
+
+    private void dfs(String airport,
+                     Map<String, PriorityQueue<String>> graph,
+                     LinkedList<String> itinerary) {
+
+        PriorityQueue<String> destinations = graph.get(airport);
+
+        while (destinations != null && !destinations.isEmpty()) {
+            String next = destinations.poll();   // always take the smallest
+            dfs(next, graph, itinerary);
+        }
+
+        // post-order: add after all children are processed
+        itinerary.addFirst(airport);
+    }
+}

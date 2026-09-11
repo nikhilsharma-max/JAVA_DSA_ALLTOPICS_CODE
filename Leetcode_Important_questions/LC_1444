@@ -1,0 +1,114 @@
+//This solution was written by me, though it is giving TLE for larger test cases, it's easy to get how recursion is working here
+//See the second solution below which gets submitted without TLE and MLE
+
+
+//Solution 01
+class Solution {
+    int ans = 0;
+    public int ways(String[] pizza, int k) {
+        if(k==1)return 1;
+        int n = pizza.length;// Number of rows
+        int m = pizza[0].length();// Number of columns
+        solve(pizza,0,n,0,m,k);
+        return ans;
+    }
+
+    public void solve(String[] pizza,int i_st, int i_ed, int j_st, int j_ed, int k){
+        //System.out.println("i_st"+i_st+"i_ed"+i_ed+"j_st"+j_st+"j_ed"+j_ed);
+        if(k==1){
+            ans++;
+            return;
+        }
+        //Horizontal cut if possible
+        for(int i = i_st+1;i<i_ed;i++){
+            if(hasAppleHorizontal(pizza,i_st,i,j_st,j_ed) && hasAppleHorizontal(pizza,i,i_ed,j_st,j_ed)){
+                solve(pizza,i,i_ed,j_st,j_ed,k-1);
+            }
+        }
+        //Vertical cut if possible
+        for(int j = j_st+1;j<j_ed;j++){
+            if(hasAppleVertical(pizza,i_st,i_ed,j_st,j) && hasAppleVertical(pizza,i_st,i_ed,j,j_ed)){
+                solve(pizza,i_st,i_ed,j,j_ed,k-1);
+            }
+        }
+    }
+
+    public boolean hasAppleHorizontal(String[] pizza,int st, int end,int j_st,int j_ed){
+        for(int i = st;i<end;i++){
+            String s = pizza[i];
+            for(int j = j_st;j<j_ed;j++){
+                if(s.charAt(j)=='A')return true;
+            }
+        }
+        return false;
+    }
+    public boolean hasAppleVertical(String[] pizza, int i_st,int i_ed,int st, int end){
+        for(int i = i_st;i<i_ed;i++){
+            String pz = pizza[i];
+            for(int j = st;j<end;j++){
+                if(pz.charAt(j)=='A')return true;
+            }
+        }
+        return false;
+    }
+}
+
+
+
+//Solution 02
+class Solution {
+    private static final int MOD = 1_000_000_007;
+    private int[][] apples;          // apples[r][c] = number of apples in pizza[r..][c..]
+    private Integer[][][] memo;
+    private int rows, cols;
+
+    public int ways(String[] pizza, int k) {
+        rows = pizza.length;
+        cols = pizza[0].length();
+
+        // Build 2D suffix sum of apples
+        apples = new int[rows + 1][cols + 1];
+        for (int r = rows - 1; r >= 0; r--) {
+            for (int c = cols - 1; c >= 0; c--) {
+                apples[r][c] = apples[r + 1][c] + apples[r][c + 1]
+                             - apples[r + 1][c + 1]
+                             + (pizza[r].charAt(c) == 'A' ? 1 : 0);
+            }
+        }
+
+        memo = new Integer[rows][cols][k];
+        return dfs(0, 0, k - 1);
+    }
+
+    private int dfs(int r, int c, int cuts) {
+        // No apple left in the current piece → invalid
+        if (apples[r][c] == 0) return 0;
+
+        // No more cuts left → this last piece is valid
+        if (cuts == 0) return 1;
+
+        if (memo[r][c][cuts] != null) {
+            return memo[r][c][cuts];
+        }
+
+        long ways = 0;
+
+        // Try all horizontal cuts (give the upper part away)
+        for (int nr = r + 1; nr < rows; nr++) {
+            // Upper part must contain at least one apple
+            if (apples[r][c] - apples[nr][c] > 0) {
+                ways = (ways + dfs(nr, c, cuts - 1)) % MOD;
+            }
+        }
+
+        // Try all vertical cuts (give the left part away)
+        for (int nc = c + 1; nc < cols; nc++) {
+            // Left part must contain at least one apple
+            if (apples[r][c] - apples[r][nc] > 0) {
+                ways = (ways + dfs(r, nc, cuts - 1)) % MOD;
+            }
+        }
+
+        return memo[r][c][cuts] = (int) ways;
+    }
+}

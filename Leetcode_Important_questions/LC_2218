@@ -1,0 +1,22 @@
+class Solution {
+    int dp[][];
+    public int maxValueOfCoins(List<List<Integer>> piles, int k) {
+        dp = new int[piles.size()+1][k+1];
+        for(int d[]:dp)Arrays.fill(d,-1);
+        return solve(0,piles,k);
+    }
+
+    public int solve(int idx,List<List<Integer>> piles,int k){
+        int n = piles.size();
+        if(idx>=n)return 0;
+        if(dp[idx][k]!=-1)return dp[idx][k];
+        int notTaken = solve(idx+1,piles,k);
+        int taken = 0;
+        int sum = 0;
+        for(int j = 0;j<Math.min(k,piles.get(idx).size());j++){
+            sum+=piles.get(idx).get(j);
+            taken = Math.max(taken,sum+solve(idx+1,piles,k-(j+1)));
+        }
+        return dp[idx][k]=Math.max(taken,notTaken);
+    }
+}

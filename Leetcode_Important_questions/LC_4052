@@ -1,0 +1,44 @@
+class Solution {
+    public int[][] cyclicShift(int n, int[][] grid, int[] rowShift, int[] colShift) {
+        int posArr[] = new int[n];
+        for(int i = 0;i<rowShift.length;i++){
+            if(rowShift[i]==0)continue;
+            for(int j = 0;j<n;j++){
+                posArr[j] = grid[i][j];
+            }
+            for(int j = 0;j<n;j++){
+                grid[i][(j-rowShift[i]+n)%n] = posArr[j];
+            }
+        }
+
+        for(int i = 0;i<n;i++){
+            for(int j = 0;j<n;j++){
+                System.out.print(grid[i][j]+"  ");
+            }
+            System.out.println();
+        }
+
+
+        
+        for(int j = 0;j<n;j++){
+            if(colShift[j]==0)continue;
+            for(int i = 0;i<n;i++){
+                posArr[i] = grid[i][j];
+            }
+            for(int i = 0;i<n;i++){
+                grid[(i-colShift[j]+n)%n][j] = posArr[i];
+            }
+        }
+
+
+       
+        
+                for(int i = 0;i<n;i++){
+            for(int j = 0;j<n;j++){
+                System.out.print(grid[i][j]+"  ");
+            }
+            System.out.println();
+        }
+        return grid;
+    }
+}

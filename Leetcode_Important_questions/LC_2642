@@ -1,0 +1,71 @@
+class Graph {
+    public class Pair implements Comparable<Pair>{
+        int node;
+        int dist;
+        public Pair(int node,int dist){
+            this.node = node;
+            this.dist = dist;
+        }
+        @Override
+        public int compareTo(Pair p2){
+            return this.dist - p2.dist;
+        }
+    }
+    Map<Integer,List<List<Integer>>> hm;
+    int N;
+    int[] dist;
+    boolean[] vis;
+    public Graph(int n, int[][] edges) {
+        N = n;
+        dist = new int[N];
+        vis = new boolean[N];
+        hm = new HashMap<>();
+        for(int edge[]:edges){
+            hm.computeIfAbsent(edge[0],k->new ArrayList<>());
+            List<Integer> list = new ArrayList<>();
+            list.add(edge[1]);
+            list.add(edge[2]);
+            hm.get(edge[0]).add(list);
+        }
+    }
+    
+    public void addEdge(int[] edge) {
+        hm.computeIfAbsent(edge[0],k->new ArrayList<>());
+        List<Integer> list = new ArrayList<>();
+        list.add(edge[1]);
+        list.add(edge[2]);
+        hm.get(edge[0]).add(list);
+        N +=1;
+        dist = new int[N];
+        vis = new boolean[N];
+    }
+    
+    public int shortestPath(int node1, int node2) {
+        Arrays.fill(dist,Integer.MAX_VALUE);
+        dist[node1] = 0;
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+        pq.add(new Pair(node1,0));
+        while(!pq.isEmpty()){
+            Pair curr = pq.remove();
+            vis[curr.node] = true;
+            if(dist[curr.node]==Integer.MAX_VALUE)continue;
+            List<List<Integer>> neigh = hm.get(curr.node);
+            if(neigh!=null && neigh.size()!=0){
+                for(List<Integer> ne:neigh){
+                    if(dist[ne.get(0)]>dist[curr.node]+ne.get(1)){
+                        dist[ne.get(0)]=dist[curr.node]+ne.get(1);
+                        pq.add(new Pair(ne.get(0),dist[ne.get(0)]));
+                    }
+                }
+            }
+        }
+        return dist[node2]==Integer.MAX_VALUE?-1:dist[node2];
+    }
+}
+
+/**
+ * Your Graph object will be instantiated and called as such:
+ * Graph obj = new Graph(n, edges);
+ * obj.addEdge(edge);
+ * int param_2 = obj.shortestPath(node1,node2);
+ */

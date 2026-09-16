@@ -1,0 +1,42 @@
+class Solution {
+    public int numBusesToDestination(int[][] routes, int source, int target) {
+        if(source==target)return 0;
+        Map<Integer,List<Integer>> hm = new HashMap<>();
+        for(int i = 0;i<routes.length;i++){
+            int route[] = routes[i]; 
+            for(int r:route){
+                hm.computeIfAbsent(r,k->new ArrayList<>()).add(i);
+            }
+        }
+        boolean vis[] = new boolean[routes.length];
+        Queue<Integer> q = new LinkedList<>();
+        List<Integer> list = hm.get(source);
+        if(list!=null && list.size()!=0)
+        for(int i:list){
+            vis[i] = true;
+            for(int route:routes[i])q.add(route);
+        }
+        int bus = 0;
+        boolean reached = false;
+        while(!q.isEmpty()){
+            int size = q.size();
+            if(reached)break;
+            bus++;
+            while(size-- >0){
+                int curr = q.remove();
+                if(curr==target)reached = true;
+                List<Integer> list2 = hm.get(curr);
+                if(list2!=null && list2.size()!=0)
+                for(int i:list2){
+                    if(!vis[i]){
+                        for(int route:routes[i]){
+                            q.add(route);
+                        }
+                        vis[i] = true;
+                    }
+                } 
+            }
+        }
+        return reached?bus:-1;
+    }
+}

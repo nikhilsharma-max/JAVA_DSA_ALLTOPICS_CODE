@@ -1,0 +1,32 @@
+class Solution {
+    public long[] resultArray(int[] nums, int k) {
+        int n = nums.length;
+        long[] result = new long[k];
+        long[] prevCount = new long[k];   // counts of subarrays ending at previous index
+
+        for (int i = 0; i < n; i++) {
+            long[] currCount = new long[k];
+
+            // 1. Single-element subarray [nums[i]]
+            int rem = (int) ((nums[i] % k + k) % k);  // handle possible negatives
+            currCount[rem] = 1;
+
+            // 2. Extend all previous subarrays by multiplying nums[i]
+            for (int oldRem = 0; oldRem < k; oldRem++) {
+                if (prevCount[oldRem] == 0) continue;
+                int newRem = (int) ((oldRem * 1L * nums[i] % k + k) % k);
+                currCount[newRem] += prevCount[oldRem];
+            }
+
+            // Move to previous for next iteration
+            prevCount = currCount;
+
+            // Accumulate into the global answer
+            for (int x = 0; x < k; x++) {
+                result[x] += prevCount[x];
+            }
+        }
+
+        return result;
+    }
+}

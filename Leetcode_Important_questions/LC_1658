@@ -1,0 +1,30 @@
+import java.util.HashMap;
+import java.util.Map;
+
+class Solution {
+    public int minOperations(int[] nums, int x) {
+        long total = 0;
+        for (int num : nums) total += num;
+
+        long target = total - x;          // we want longest subarray summing to target
+        if (target < 0) return -1;
+        if (target == 0) return nums.length;
+
+        Map<Long, Integer> prefixIndex = new HashMap<>();
+        prefixIndex.put(0L, -1);
+
+        long prefix = 0;
+        int maxLen = -1;
+
+        for (int i = 0; i < nums.length; i++) {
+            prefix += nums[i];
+
+            if (prefixIndex.containsKey(prefix - target)) {
+                maxLen = Math.max(maxLen, i - prefixIndex.get(prefix - target));
+            }
+            prefixIndex.putIfAbsent(prefix, i);
+        }
+
+        return maxLen == -1 ? -1 : nums.length - maxLen;
+    }
+}

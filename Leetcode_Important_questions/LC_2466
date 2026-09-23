@@ -1,0 +1,75 @@
+//Solution 1
+class Solution {
+    int dp[];
+    int Z,H,L,O;
+    int MOD = 10_000_000_07;
+    public int countGoodStrings(int low, int high, int zero, int one) {
+        dp = new int[high+1];
+        Arrays.fill(dp,-1);
+        Z = zero;
+        L = low;
+        H = high;
+        O = one;
+        return solve(0);
+    }
+
+    public int solve(int l){
+        if(l>H)return 0;
+        if(dp[l]!=-1)return dp[l];
+        boolean addOne = false;
+        if(l>=L){
+            addOne = true;
+        }
+        int ans1 = solve(l+Z);
+        int ans2 = solve(l+O);
+        int ans = ((addOne ? 1 : 0) + ans1 + ans2) % MOD;
+        return dp[l]=ans;
+    }
+}
+
+
+
+//Solution 2
+
+class Solution {
+    Map<Integer,Integer> hm;
+    int MOD = 10_000_000_07;
+    public int countGoodStrings(int low, int high, int zero, int one) {
+        hm = new HashMap<>();
+        StringBuilder zr = new StringBuilder("");
+        StringBuilder on = new StringBuilder("");
+        for(int i = 0;i<zero;i++){
+            zr.append('0');
+        }
+        for(int i = 0;i<one;i++){
+            on.append('1');
+        }
+        String s1 = zr.toString();//zero
+        String s2 = on.toString();//one
+        return solve(s1,s2,low,high,new StringBuilder(""));
+    }
+
+    public int solve(String s1,String s2,int low, int high, StringBuilder curr){
+
+        if(hm.containsKey(curr.length())){
+            return hm.get(curr.length());
+        }
+        if(curr.length()>high)return 0;
+        if(curr.length()>=low){
+            int ans1 = solve(s1,s2,low,high,curr.append(s1))%MOD;
+            curr.delete(curr.length()-s1.length(),curr.length());
+            int ans2 = solve(s1,s2,low,high,curr.append(s2))%MOD;
+            curr.delete(curr.length()-s2.length(),curr.length());
+            int ans = (1+ans1+ans2)%MOD;
+            hm.put(curr.length(),ans%MOD);
+            return ans%MOD;
+        }
+            int ans1 = solve(s1,s2,low,high,curr.append(s1))%MOD;
+            curr.delete(curr.length()-s1.length(),curr.length());
+            int ans2 = solve(s1,s2,low,high,curr.append(s2))%MOD;
+            curr.delete(curr.length()-s2.length(),curr.length());
+            int ans = (ans1+ans2)%MOD;
+            hm.put(curr.length(),ans%MOD);
+            return ans%MOD;
+    }
+}

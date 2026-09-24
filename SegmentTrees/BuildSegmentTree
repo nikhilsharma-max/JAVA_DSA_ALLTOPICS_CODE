@@ -1,0 +1,89 @@
+public class SegmentTree {
+
+    private int[] tree;
+    private int n;
+
+    // Constructor: builds the segment tree from the given array
+    public SegmentTree(int[] arr) {
+        n = arr.length;
+        tree = new int[4 * n];   // safe size
+        build(arr, 0, 0, n - 1);
+    }
+
+    // Build the segment tree
+    private void build(int[] arr, int node, int start, int end) {
+        if (start == end) {
+            tree[node] = arr[start];
+            return;
+        }
+        int mid = (start + end) / 2;
+        build(arr, 2 * node + 1, start, mid);
+        build(arr, 2 * node + 2, mid + 1, end);
+        tree[node] = tree[2 * node + 1] + tree[2 * node + 2];
+    }
+
+    // Point update: set arr[index] = value
+    public void update(int index, int value) {
+        update(0, 0, n - 1, index, value);
+    }
+
+    private void update(int node, int start, int end, int index, int value) {
+        if (start == end) {
+            tree[node] = value;
+            return;
+        }
+        int mid = (start + end) / 2;
+        if (index <= mid) {
+            update(2 * node + 1, start, mid, index, value);
+        } else {
+            update(2 * node + 2, mid + 1, end, index, value);
+        }
+        tree[node] = tree[2 * node + 1] + tree[2 * node + 2];
+    }
+
+    // Range sum query: sum from L to R (inclusive)
+    public int query(int L, int R) {
+        return query(0, 0, n - 1, L, R);
+    }
+
+    private int query(int node, int start, int end, int L, int R) {
+        // Completely outside the range
+        if (R < start || end < L) {
+            return 0;
+        }
+        // Completely inside the range
+        if (L <= start && end <= R) {
+            return tree[node];
+        }
+        // Partial overlap
+        int mid = (start + end) / 2;
+        int leftSum  = query(2 * node + 1, start, mid, L, R);
+        int rightSum = query(2 * node + 2, mid + 1, end, L, R);
+        return leftSum + rightSum;
+    }
+
+    // Optional: print the tree (for debugging)
+    public void printTree() {
+        System.out.print("Segment Tree: ");
+        for (int val : tree) {
+            if (val != 0) System.out.print(val + " ");
+        }
+        System.out.println();
+    }
+
+    // ---------------- Demo ----------------
+    public static void main(String[] args) {
+        int[] arr = {1, 3, 5, 7, 9, 11};
+
+        SegmentTree st = new SegmentTree(arr);
+
+        System.out.println("Sum of range [1, 3]: " + st.query(1, 3));   // 3+5+7 = 15
+        System.out.println("Sum of range [0, 5]: " + st.query(0, 5));   // 1+3+5+7+9+11 = 36
+
+        st.update(1, 10);  // arr[1] = 10 (was 3)
+
+        System.out.println("After update arr[1] = 10:");
+        System.out.println("Sum of range [1, 3]: " + st.query(1, 3));   // 10+5+7 = 22
+        System.out.println("Sum of range [0, 5]: " + st.query(0, 5));   // 1+10+5+7+9+11 = 43
+    }
+}

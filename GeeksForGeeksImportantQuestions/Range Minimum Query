@@ -1,0 +1,56 @@
+class Solution {
+
+    public ArrayList<Integer> rangeMinQuery(int[] arr, int[][] queries) {
+        int n = arr.length;
+        SegmentTree st = new SegmentTree(arr);
+
+        ArrayList<Integer> result = new ArrayList<>();
+        for (int[] q : queries) {
+            result.add(st.query(q[0], q[1]));
+        }
+        return result;
+    }
+
+    // Segment Tree for Range Minimum Query
+    static class SegmentTree {
+        int[] tree;
+        int n;
+
+        SegmentTree(int[] arr) {
+            n = arr.length;
+            tree = new int[4 * n];
+            build(arr, 0, 0, n - 1);
+        }
+
+        private void build(int[] arr, int node, int start, int end) {
+            if (start == end) {
+                tree[node] = arr[start];
+                return;
+            }
+            int mid = (start + end) / 2;
+            build(arr, 2 * node + 1, start, mid);
+            build(arr, 2 * node + 2, mid + 1, end);
+            tree[node] = Math.min(tree[2 * node + 1], tree[2 * node + 2]);
+        }
+
+        public int query(int L, int R) {
+            return query(0, 0, n - 1, L, R);
+        }
+
+        private int query(int node, int start, int end, int L, int R) {
+            // Completely outside
+            if (R < start || end < L) {
+                return Integer.MAX_VALUE;
+            }
+            // Completely inside
+            if (L <= start && end <= R) {
+                return tree[node];
+            }
+            // Partial overlap
+            int mid = (start + end) / 2;
+            int leftMin  = query(2 * node + 1, start, mid, L, R);
+            int rightMin = query(2 * node + 2, mid + 1, end, L, R);
+            return Math.min(leftMin, rightMin);
+        }
+    }
+}

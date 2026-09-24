@@ -1,0 +1,48 @@
+class Solution {
+    int n;
+    
+    public int solve(int[] nums, int mask, int operation, int[] memo) {
+        if (2 * operation == nums.length)
+            return 0;
+        
+        if (memo[mask] != -1) {
+            return memo[mask];
+        }
+        
+        int maxScore = 0;
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                
+                if (((mask >> i) & 1) == 1 || ((mask >> j) & 1) == 1)
+                    continue;
+                
+                int newMask = mask | (1 << i) | (1 << j);
+                
+                int currScore = (operation + 1) * gcd(nums[i], nums[j]);
+                
+                int remainingScore = solve(nums, newMask, operation + 1, memo);
+                
+                maxScore = Math.max(maxScore, currScore + remainingScore);
+            }
+        }
+        
+        memo[mask] = maxScore;
+        return maxScore;
+    }
+    
+    public int maxScore(int[] nums) {
+        n = nums.length;
+        
+        int memosize = 1 << n;
+        
+        int[] t = new int[memosize];
+        Arrays.fill(t, -1);
+        
+        return solve(nums, 0, 0, t);
+    }
+    
+    private int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
+}

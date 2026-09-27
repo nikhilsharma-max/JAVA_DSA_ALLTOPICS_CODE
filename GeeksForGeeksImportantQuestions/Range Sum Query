@@ -1,0 +1,48 @@
+class Solution {
+    
+    public class SegmentTree{
+        int tree[];
+        int n;
+        //Constructor to initalize
+        public SegmentTree(int arr[]){
+            n = arr.length;
+            tree = new int[4*n];
+            buildTree(0,0,n-1,arr);//(int node, int start, int end, int arr[])
+        }
+        
+        public void buildTree(int node, int start, int end, int arr[]){
+            if(start==end){
+                tree[node] = arr[start];
+                return;
+            }
+            int mid = start+(end-start)/2;
+            buildTree(2*node+1,start,mid,arr);
+            buildTree(2*node+2,mid+1,end,arr);
+            tree[node] = tree[2*node+1]+tree[2*node+2];
+        }
+        
+        public int query(int i,int j){
+            return query(0,0,n-1,i,j);
+        }
+        
+        public int query(int node, int start, int end,int L,int R){
+            if(R<start || L>end)return 0;
+            if(L <= start && end <= R)return tree[node];
+            int mid = start+(end-start)/2;
+            return query(2*node+1,start,mid,L,R)+query(2*node+2,mid+1,end,L,R);
+        }
+        
+    }
+    
+    public ArrayList<Integer> querySum(int[] arr, int[][] queries) {
+        // code here
+        
+        ArrayList<Integer> list = new ArrayList<>();
+        SegmentTree st = new SegmentTree(arr);
+        for(int q[]:queries){
+            list.add(st.query(q[0]-1,q[1]-1));
+        }
+        return list;
+        
+    }
+}

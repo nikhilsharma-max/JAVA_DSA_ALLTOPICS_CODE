@@ -1,0 +1,47 @@
+class Solution {
+    private int m, n;
+    private char[][] grid;
+    private Boolean[][][] memo; // memo[i][j][balance]
+
+    public boolean hasValidPath(char[][] grid) {
+        this.grid = grid;
+        m = grid.length;
+        n = grid[0].length;
+
+        // Early pruning
+        // Path length = m + n - 1 must be even (equal number of '(' and ')')
+        if ((m + n) % 2 == 0) return false;          // length odd → impossible
+        if (grid[0][0] == ')') return false;         // must start with '('
+        if (grid[m - 1][n - 1] == '(') return false; // must end with ')'
+
+        // Max possible balance is at most the remaining steps (m + n)
+        memo = new Boolean[m][n][m + n + 1];
+        return dfs(0, 0, 0);
+    }
+
+    private boolean dfs(int i, int j, int bal) {
+        // Out of bounds
+        if (i >= m || j >= n) return false;
+
+        // Update balance with current cell
+        bal += (grid[i][j] == '(') ? 1 : -1;
+
+        // Invalid balance
+        if (bal < 0) return false;
+
+        // Reached end
+        if (i == m - 1 && j == n - 1) {
+            return bal == 0;
+        }
+
+        // Already computed
+        if (memo[i][j][bal] != null) {
+            return memo[i][j][bal];
+        }
+
+        // Explore down or right
+        boolean res = dfs(i + 1, j, bal) || dfs(i, j + 1, bal);
+        memo[i][j][bal] = res;
+        return res;
+    }
+}

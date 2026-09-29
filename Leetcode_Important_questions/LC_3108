@@ -1,0 +1,70 @@
+class Solution {
+    public int[] minimumCost(int n, int[][] edges, int[][] query) {
+        UnionFind uf = new UnionFind(n);
+        
+        // Process all edges: union nodes and keep track of the AND of all edge weights in the component
+        for (int[] edge : edges) {
+            int u = edge[0], v = edge[1], w = edge[2];
+            uf.union(u, v, w);
+        }
+        
+        int[] ans = new int[query.length];
+        for (int i = 0; i < query.length; i++) {
+            int s = query[i][0], t = query[i][1];
+            ans[i] = uf.getMinCost(s, t);
+        }
+        return ans;
+    }
+}
+
+class UnionFind {
+    private int[] parent;
+    private int[] rank;
+    private int[] andCost;  // bitwise AND of all edge weights in the component
+
+    public UnionFind(int n) {
+        parent = new int[n];
+        rank = new int[n];
+        andCost = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+            // Initialize to all bits set (enough for wi ≤ 10^5)
+            andCost[i] = (1 << 17) - 1;  // 2^17 - 1 = 131071 > 10^5
+        }
+    }
+
+    public int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]);  // path compression
+        }
+        return parent[x];
+    }
+
+    public void union(int u, int v, int w) {
+        int pu = find(u);
+        int pv = find(v);
+        
+        // Always AND the current edge weight into both roots
+        int newCost = andCost[pu] & andCost[pv] & w;
+        andCost[pu] = newCost;
+        andCost[pv] = newCost;
+        
+        if (pu == pv) return;  // already in same component
+        
+        // Union by rank
+        if (rank[pu] < rank[pv]) {
+            parent[pu] = pv;
+        } else if (rank[pu] > rank[pv]) {
+            parent[pv] = pu;
+        } else {
+            parent[pv] = pu;
+            rank[pu]++;
+        }
+    }
+
+    public int getMinCost(int u, int v) {
+        int pu = find(u);
+        int pv = find(v);
+        return (pu == pv) ? andCost[pu] : -1;
+    }
+}

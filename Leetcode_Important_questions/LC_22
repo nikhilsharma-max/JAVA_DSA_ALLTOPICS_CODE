@@ -25,3 +25,41 @@ class Solution {
         return;
     }
 }
+
+
+
+
+
+//Method 2
+class Solution {
+    // Time Complexity: O(4^n / sqrt(n))  ≈  O(C_n * n)
+    //   where C_n is the nth Catalan number (number of valid sequences).
+    //   The recursion tree has O(C_n) nodes; each finished string costs O(n).
+    // Space Complexity: O(C_n * n)
+    //   for storing the result + O(n) recursion stack depth.
+    List<String> result;
+
+    public List<String> generateParenthesis(int n) {
+        result = new ArrayList<>();
+        solve(0, 0, n, "");
+        return result;
+    }
+
+    private void solve(int open, int close, int n, String s) {
+        if (open > n || close > n || close > open) return;
+
+        if (open == n && close == n) {
+            result.add(s);
+            return;
+        }
+
+        if (open == close) {
+            // Must place an opening parenthesis
+            solve(open + 1, close, n, s + "(");
+        } else {
+            // Can place either
+            solve(open + 1, close, n, s + "(");
+            solve(open, close + 1, n, s + ")");
+        }
+    }
+}

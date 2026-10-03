@@ -1,0 +1,75 @@
+class SegmentTree {
+    private int[] tree;   // 1-based segment tree storing max
+    private int n;
+
+    public SegmentTree(int[] baskets) {
+        n = baskets.length;
+        tree = new int[4 * n];
+        build(1, 0, n - 1, baskets);
+    }
+
+    private void build(int node, int start, int end, int[] baskets) {
+        if (start == end) {
+            tree[node] = baskets[start];
+            return;
+        }
+        int mid = (start + end) / 2;
+        build(2 * node, start, mid, baskets);
+        build(2 * node + 1, mid + 1, end, baskets);
+        tree[node] = Math.max(tree[2 * node], tree[2 * node + 1]);
+    }
+
+    // Find leftmost index with capacity >= val. Returns -1 if none.
+    public int query(int val) {
+        if (tree[1] < val) return -1;
+        return query(1, 0, n - 1, val);
+    }
+
+    private int query(int node, int start, int end, int val) {
+        if (start == end) {
+            return start;               // found the leaf
+        }
+        int mid = (start + end) / 2;
+        // Prefer left child if it can satisfy
+        if (tree[2 * node] >= val) {
+            return query(2 * node, start, mid, val);
+        }
+        return query(2 * node + 1, mid + 1, end, val);
+    }
+
+    // Set baskets[idx] = 0 (used)
+    public void update(int idx) {
+        update(1, 0, n - 1, idx, 0);
+    }
+
+    private void update(int node, int start, int end, int idx, int val) {
+        if (start == end) {
+            tree[node] = val;
+            return;
+        }
+        int mid = (start + end) / 2;
+        if (idx <= mid) {
+            update(2 * node, start, mid, idx, val);
+        } else {
+            update(2 * node + 1, mid + 1, end, idx, val);
+        }
+        tree[node] = Math.max(tree[2 * node], tree[2 * node + 1]);
+    }
+}
+
+class Solution {
+    public int numOfUnplacedFruits(int[] fruits, int[] baskets) {
+        SegmentTree st = new SegmentTree(baskets);
+        int unplaced = 0;
+
+        for (int fruit : fruits) {
+            int idx = st.query(fruit);
+            if (idx == -1) {
+                unplaced++;
+            } else {
+                st.update(idx);   // mark basket as used
+            }
+        }
+        return unplaced;
+    }
+}

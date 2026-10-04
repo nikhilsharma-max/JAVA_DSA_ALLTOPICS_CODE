@@ -1,0 +1,12 @@
+class Solution {
+    public int minRotations(String s) {
+        int minAns = 0;
+        int curr = 0;
+        for(char ch:s.toCharArray()){
+            int nextDig = ch-'0';
+            minAns+= (Math.min(10-Math.abs(nextDig-curr),Math.abs(nextDig-curr)));
+            curr = nextDig;
+        }
+        return minAns;
+    }
+}

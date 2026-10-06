@@ -1,0 +1,59 @@
+class Solution {
+    private Map<String, Integer> memo;
+    private int[] arr1, arr2;
+
+    public int makeArrayIncreasing(int[] arr1, int[] arr2) {
+        this.arr1 = arr1;
+        Arrays.sort(arr2);
+        
+        // Remove duplicates
+        int m = 0;
+        for (int x : arr2) {
+            if (m == 0 || x != arr2[m - 1]) {
+                arr2[m++] = x;
+            }
+        }
+        this.arr2 = Arrays.copyOf(arr2, m);
+
+        memo = new HashMap<>();
+        int ans = dfs(0, -1);          // start with prev = -1
+        return ans == Integer.MAX_VALUE / 2 ? -1 : ans;
+    }
+
+    private int dfs(int i, int prev) {
+        if (i == arr1.length) return 0;
+
+        String key = i + "," + prev;
+        if (memo.containsKey(key)) return memo.get(key);
+
+        int res = Integer.MAX_VALUE / 2;
+
+        // Option 1: keep arr1[i]
+        if (arr1[i] > prev) {
+            res = Math.min(res, dfs(i + 1, arr1[i]));
+        }
+
+        // Option 2: replace with the smallest value in arr2 that is > prev
+        int idx = upperBound(arr2, prev);
+        if (idx < arr2.length) {
+            res = Math.min(res, 1 + dfs(i + 1, arr2[idx]));
+        }
+
+        memo.put(key, res);
+        return res;
+    }
+
+    // Returns the smallest index i such that arr[i] > val
+    private int upperBound(int[] a, int val) {
+        int l = 0, r = a.length;
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (a[mid] <= val) {
+                l = mid + 1;
+            } else {
+                r = mid;
+            }
+        }
+        return l;
+    }
+}

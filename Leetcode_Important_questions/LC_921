@@ -1,0 +1,72 @@
+// Way 1
+class Solution {
+    public int minAddToMakeValid(String s) {
+        int ansLeft = Math.abs(check(s,1,-1));
+        
+        int ansRight = Math.abs(checkOpp(s,-1,1));
+        System.out.println(ansLeft+"  "+ansRight);
+        return Math.min(ansLeft,ansRight);
+    }
+
+    public int check(String s,int op,int cl){
+        int result= 0;
+        int ans = 0;
+        for(char ch:s.toCharArray()){
+           
+            if(ch=='('){
+                ans+=op;
+                if(ans<0){
+                    result += Math.abs(ans);
+                    ans = 0;
+                }
+            }else{
+                ans+=cl;
+                if(ans<0){
+                    result += Math.abs(ans);
+                    ans = 0;
+                }
+            }
+        }
+        return Math.abs(ans)+result;
+    }
+    public int checkOpp(String s,int op,int cl){
+        int result= 0;
+        int ans = 0;
+        for(int i = s.length()-1;i>=0;i--){
+           char ch = s.charAt(i);
+            if(ch=='('){
+                ans+=op;
+                if(ans<0){
+                    result += Math.abs(ans);
+                    ans = 0;
+                }
+            }else{
+                ans+=cl;
+                if(ans<0){
+                    result += Math.abs(ans);
+                    ans = 0;
+                }
+            }
+        }
+        return Math.abs(ans)+result;
+    }
+}
+
+
+
+//Way 2
+class Solution {
+    public int minAddToMakeValid(String s) {
+        int ans = 0;
+        int open = 0;
+        for(char ch:s.toCharArray())
+            if(ch=='(')
+                open++;
+            else
+                if(open>0)
+                    open--;
+                else
+                    ans++;                      
+        return open+ans;
+    }
+}

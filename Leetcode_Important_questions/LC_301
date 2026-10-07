@@ -1,0 +1,45 @@
+class Solution {
+    int n;
+    Set<String> hs;
+    int maxLen;
+    public List<String> removeInvalidParentheses(String s) {
+        maxLen = 0;
+        n = s.length();
+        hs = new HashSet<>();
+        List<String> result = new ArrayList<>();
+        StringBuilder curr = new StringBuilder("");
+        solve(s,0,curr,0);
+        for(String key:hs){
+            result.add(key);
+        }
+        return result;
+    }
+
+    public void solve(String s,int idx,StringBuilder curr, int count){
+        if(count<0)return;
+        if(idx==s.length()){
+            if(count==0){
+                if(curr.length()>maxLen){
+                    hs.clear();
+                    maxLen = curr.length();
+                }
+                if(maxLen==curr.length()){
+                    hs.add(curr.toString());
+                }
+            }
+            return ;
+        }
+
+        // It current character is an alphabet
+        if(s.charAt(idx)!='(' && s.charAt(idx)!=')'){
+            curr.append(s.charAt(idx));
+            solve(s,idx+1,curr,count);
+            curr.deleteCharAt(curr.length()-1);
+            return;
+        }
+        curr.append(s.charAt(idx));
+        solve(s,idx+1,curr,count+ ((s.charAt(idx)=='(')?1:-1));
+        curr.deleteCharAt(curr.length()-1);
+        solve(s,idx+1,curr,count);
+    }     
+}

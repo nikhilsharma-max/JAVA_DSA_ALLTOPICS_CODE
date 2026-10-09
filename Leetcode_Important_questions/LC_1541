@@ -1,0 +1,26 @@
+class Solution {
+    public int minInsertions(String s) {
+        int count = 0;
+        int result = 0;
+        int i = 0;
+        while(i<s.length()){
+            if(s.charAt(i)=='('){
+                count++;
+                i++;
+            }else{
+                if(count>0){
+                    count--;
+                }else{
+                    result++;
+                }
+                if(1+i<s.length() &&  s.charAt(i+1)==')'){
+                    i+=2;
+                }else{
+                    result++;
+                    i++;
+                }
+            }
+        }
+        return result+count*2;
+    }
+}

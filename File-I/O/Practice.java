@@ -18,6 +18,5 @@ public class Practice {
         FileReader fr = new FileReader(file);
         BufferedReader br = new BufferedReader(fr);
         System.out.println();
-        br.close();
-    }
+        br.close();  }
 }

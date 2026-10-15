@@ -1,0 +1,49 @@
+//Method 1 -- But here it will give TLE as n==1500
+class Solution {
+    int dp[][];
+    public int longestArithSeqLength(int[] nums) {
+        int n = nums.length;
+        dp = new int[nums.length+1][1003];
+        for(int d[]:dp)Arrays.fill(d,-1);
+        if(n<=2)return n;
+        int ans = 0;
+        for(int i =0;i<n;i++){
+            for(int j = i+1;j<n;j++){
+                int diff = nums[j]-nums[i];
+                ans = Math.max(ans,2+solve(i,diff,nums));
+            }
+        }
+        return ans;
+    }
+
+  public int solve(int i,int diff,int nums[]){
+    if(i<0)return 0;
+    if(dp[i][diff+501]!=-1)return dp[i][diff+501];
+    int ans = 0;
+    for(int k = i-1;k>=0;k--){
+        if(nums[i]-nums[k]==diff){
+            ans = Math.max(ans,1+solve(k,diff,nums));
+        }
+    }
+    return dp[i][diff+501] = ans;
+  }
+}
+
+//Method 2 Bottom up
+class Solution {
+    public int longestArithSeqLength(int[] nums) {
+        int dp[][] = new int[nums.length+1][1003];
+        int n = nums.length;
+        //dp[i][j] = longest arithematic subseq. ending at idx i with common difference diff
+        for(int d[]:dp)Arrays.fill(d,-1);
+        int maxLen=0;
+        for(int i = 1;i<n;i++){
+            for(int j = 0;j<i;j++){
+                int diff = nums[i]-nums[j]+500;//negative idx se bachne ke liye 500 add kiya
+                dp[i][diff] = dp[j][diff]>0?dp[j][diff]+1:2;
+                maxLen = Math.max(maxLen,dp[i][diff]);
+            }
+        }
+        return maxLen;
+    }
+}

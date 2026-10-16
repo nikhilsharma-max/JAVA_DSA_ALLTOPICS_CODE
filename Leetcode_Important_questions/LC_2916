@@ -1,0 +1,79 @@
+class Solution {
+    private static final int MOD = 1_000_000_007;
+
+    public int sumCounts(int[] nums) {
+        int n = nums.length;
+        SegmentTree st = new SegmentTree(n);
+        Map<Integer, Integer> last = new HashMap<>();
+        long ans = 0;
+
+        for (int r = 0; r < n; r++) {
+            int prev = last.getOrDefault(nums[r], -1);
+            // add +1 on [prev+1, r]
+            st.update(prev + 1, r, 1);
+            // sum of squares of all d[i] for i = 0..r
+            ans = (ans + st.querySumSq()) % MOD;
+            last.put(nums[r], r);
+        }
+        return (int) ans;
+    }
+
+    /** Segment tree that supports range-add and returns global sum of squares. */
+    private static class SegmentTree {
+        private final int n;
+        private final long[] sum;   // sum of values
+        private final long[] sumSq; // sum of squares
+        private final long[] lazy;
+
+        SegmentTree(int n) {
+            this.n = n;
+            sum   = new long[4 * n];
+            sumSq = new long[4 * n];
+            lazy  = new long[4 * n];
+        }
+
+        void update(int L, int R, int val) {
+            update(1, 0, n - 1, L, R, val);
+        }
+
+        long querySumSq() {
+            return sumSq[1];
+        }
+
+        private void apply(int node, int start, int end, long val) {
+            int len = end - start + 1;
+            // (x + val)^2 = x^2 + 2*val*x + val^2
+            sumSq[node] = (sumSq[node] + 2 * val % MOD * sum[node] % MOD
+                           + val * val % MOD * len % MOD) % MOD;
+            sum[node] = (sum[node] + val * len % MOD) % MOD;
+            lazy[node] = (lazy[node] + val) % MOD;
+        }
+
+        private void push(int node, int start, int end) {
+            if (lazy[node] != 0 && start != end) {
+                int mid = (start + end) >>> 1;
+                apply(node << 1,     start, mid, lazy[node]);
+                apply(node << 1 | 1, mid + 1, end, lazy[node]);
+                lazy[node] = 0;
+            }
+        }
+
+        private void pull(int node) {
+            sum[node]   = (sum[node << 1]   + sum[node << 1 | 1]) % MOD;
+            sumSq[node] = (sumSq[node << 1] + sumSq[node << 1 | 1]) % MOD;
+        }
+
+        private void update(int node, int start, int end, int L, int R, long val) {
+            if (R < start || end < L) return;
+            if (L <= start && end <= R) {
+                apply(node, start, end, val);
+                return;
+            }
+            push(node, start, end);
+            int mid = (start + end) >>> 1;
+            update(node << 1,     start, mid, L, R, val);
+            update(node << 1 | 1, mid + 1, end, L, R, val);
+            pull(node);
+        }
+    }
+}

@@ -1,0 +1,57 @@
+class Solution {
+    public class Pair implements Comparable<Pair>{
+        int val;
+        int sum;
+        public Pair(int val,int sum){
+            this.val = val;
+            this.sum = sum;
+        }
+
+        @Override
+        public int compareTo(Pair p2){
+            if(this.sum==p2.sum){
+                return this.val-p2.val;
+            }else{
+                return this.sum-p2.sum;
+            }
+        }
+    }
+
+    public int minSwaps(int[] nums) {
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+        Map<Integer,Integer> hm = new HashMap<>();
+        for(int i = 0;i<nums.length;i++){
+            int val = calculateDigitSum(nums[i]);
+            hm.put(nums[i],i);
+            pq.add(new Pair(nums[i],val));
+        }
+        int sorted[] = new int[nums.length];
+        for(int i = 0;i<nums.length;i++){
+            sorted[i] = pq.remove().val;
+        }
+        int count = 0;
+        for(int i = 0;i<nums.length;i++){
+            if(nums[i] == sorted[i]){
+                continue;
+            }else{
+                int j = hm.get(sorted[i]);
+                nums[j] = nums[i];
+                nums[i] = sorted[i];
+                hm.put(nums[i],i);
+                hm.put(nums[j],j);
+                count++;
+            }
+        }
+        return count;
+    }
+
+
+    public int calculateDigitSum(int n){
+        int sum = 0;
+        while(n>0){
+            sum+=(n%10);
+            n/=10;
+        }
+        return sum;
+    }
+}

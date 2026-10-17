@@ -1,0 +1,26 @@
+class Solution {
+    int dp[][];
+    public int tallestBillboard(int[] rods) {
+        int n = rods.length;
+        if(n<2)return 0;
+        dp = new int[21][10002];
+        for(int d[]:dp)Arrays.fill(d,-1);
+        return solve(rods,0,0)/2;
+    }
+
+    public int solve(int rods[],int i,int diff){
+        if(i>=rods.length){
+            if(diff==0){
+                return 0;
+            }else{
+                return Integer.MIN_VALUE;
+            }
+        }
+        if(dp[i][diff+5000]!=-1)return dp[i][diff+5000];
+        int ans1 = rods[i]+solve(rods,i+1,diff+rods[i]);
+        int ans2 = rods[i]+solve(rods,i+1,diff-rods[i]);
+        int ans3 = solve(rods,i+1,diff);
+        int ans = Math.max(ans1,Math.max(ans2,ans3));
+        return dp[i][diff+5000]=ans;
+    }
+}

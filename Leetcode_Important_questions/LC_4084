@@ -1,0 +1,25 @@
+class Solution {
+    public int[] lastVisitedCell(char[][] grid) {
+        Map<Character,int[]> hm = new HashMap<>();
+        hm.put('R',new int[] {0,1});
+        hm.put('L',new int[] {0,-1});
+        hm.put('U',new int[] {-1,0});
+        hm.put('D',new int[] {1,0});
+        int n = grid.length;
+        int m = grid[0].length;
+        int i = 0;
+        int j = 0;
+        while(i<n && j<m){
+            //System.out.println(i+" : "+j);
+            int next[] = hm.get(grid[i][j]);
+            //if(next==null || next.length==0)break;
+            int new_i = i+next[0];
+            int new_j = j+next[1];
+            if(new_i<0 || new_j<0 ||  new_i>=n || new_j>=m || grid[new_i][new_j]=='V')return new int[]{i,j};
+            grid[i][j] = 'V';
+            i = new_i;
+            j = new_j;
+        }
+        return new int[]{i,j};
+    }
+}

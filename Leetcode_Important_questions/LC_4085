@@ -1,0 +1,58 @@
+class Solution {
+    public int findColoredRoot(int[][] edges, String colors) {
+        int n = colors.length();
+        List<List<Integer>> g = new ArrayList<>(n);
+        int[] deg = new int[n];
+        for (int i = 0; i < n; i++) {
+            g.add(new ArrayList<>());
+        }
+        for (int[] e : edges) {
+            int u = e[0], v = e[1];
+            g.get(u).add(v);
+            g.get(v).add(u);
+            deg[u]++;
+            deg[v]++;
+        }
+
+        // next colour in the unique cycle R -> B -> W -> R
+        java.util.function.Function<Character, Character> nxt = c -> {
+            if (c == 'R') return 'B';
+            if (c == 'B') return 'W';
+            return 'R'; // c == 'W'
+        };
+
+        int[] indeg = new int[n];
+        for (int[] e : edges) {
+            int u = e[0], v = e[1];
+            char cu = colors.charAt(u);
+            char cv = colors.charAt(v);
+            if (cu == cv) {
+                return -1; // same colour → impossible
+            }
+            // orient the unique legal direction
+            if (nxt.apply(cu) == cv) {
+                // u -> v
+                indeg[v]++;
+            } else {
+                // must be v -> u
+                indeg[u]++;
+            }
+        }
+
+        int root = -1;
+        for (int i = 0; i < n; i++) {
+            if (indeg[i] == 0) {
+                if (root != -1) {
+                    return -1; // more than one candidate
+                }
+                root = i;
+            } else if (indeg[i] != 1) {
+                return -1; // some node has indegree ≠ 1
+            }
+        }
+        if (root == -1 || deg[root] > 2) {
+            return -1;
+        }
+        return root;
+    }
+}

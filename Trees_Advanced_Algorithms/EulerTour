@@ -1,0 +1,262 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    // Fast input reader for large inputs.
+    static class FastScanner {
+        private final InputStream in;
+        private final byte[] buffer = new byte[1 << 16];
+
+        private int ptr = 0;
+        private int len = 0;
+
+        FastScanner(InputStream in) {
+            this.in = in;
+        }
+
+        private int read() throws IOException {
+            if (ptr >= len) {
+                len = in.read(buffer);
+                ptr = 0;
+
+                if (len <= 0) {
+                    return -1;
+                }
+            }
+
+            return buffer[ptr++];
+        }
+
+        long nextLong() throws IOException {
+            int c;
+
+            do {
+                c = read();
+            } while (c <= ' ' && c != -1);
+
+            long sign = 1;
+
+            if (c == '-') {
+                sign = -1;
+                c = read();
+            }
+
+            long value = 0;
+
+            while (c > ' ') {
+                value = value * 10 + (c - '0');
+                c = read();
+            }
+
+            return value * sign;
+        }
+
+        int nextInt() throws IOException {
+            return (int) nextLong();
+        }
+    }
+
+    // Fenwick Tree / Binary Indexed Tree.
+    static class FenwickTree {
+        private final int n;
+        private final long[] bit;
+
+        FenwickTree(int n) {
+            this.n = n;
+            this.bit = new long[n + 1];
+        }
+
+        // Add delta to the element at the given 1-based index.
+        void add(int index, long delta) {
+            while (index <= n) {
+                bit[index] += delta;
+                index += index & -index;
+            }
+        }
+
+        // Return the prefix sum from index 1 to index.
+        long prefixSum(int index) {
+            long sum = 0;
+
+            while (index > 0) {
+                sum += bit[index];
+                index -= index & -index;
+            }
+
+            return sum;
+        }
+
+        // Return the sum of the inclusive range [left, right].
+        long rangeSum(int left, int right) {
+            return prefixSum(right) - prefixSum(left - 1);
+        }
+    }
+
+    // Represents a frame in the iterative DFS.
+    static class Frame {
+        int node;
+        int parent;
+        int nextEdge;
+
+        Frame(int node, int parent) {
+            this.node = node;
+            this.parent = parent;
+            this.nextEdge = 0;
+        }
+    }
+
+    static class TreeQueries {
+        private final int n;
+        private final long[] values;
+        private final List<Integer>[] adj;
+
+        // Euler Tour information.
+        private final int[] tin;
+        private final int[] tout;
+        private final int[] euler;
+
+        private int timer;
+
+        private FenwickTree fenwick;
+
+        @SuppressWarnings("unchecked")
+        TreeQueries(int n, long[] values) {
+            this.n = n;
+            this.values = values;
+
+            adj = new ArrayList[n + 1];
+
+            for (int i = 1; i <= n; i++) {
+                adj[i] = new ArrayList<>();
+            }
+
+            tin = new int[n + 1];
+            tout = new int[n + 1];
+            euler = new int[n + 1];
+
+            timer = 0;
+        }
+
+        // Add an undirected edge between two nodes.
+        void addEdge(int u, int v) {
+            adj[u].add(v);
+            adj[v].add(u);
+        }
+
+        // Build the Euler Tour using iterative DFS.
+        void buildEulerTour(int root) {
+            boolean[] visited = new boolean[n + 1];
+
+            Deque<Frame> stack = new ArrayDeque<>();
+
+            visited[root] = true;
+            tin[root] = ++timer;
+            euler[timer] = root;
+
+            stack.push(new Frame(root, 0));
+
+            while (!stack.isEmpty()) {
+                Frame current = stack.peek();
+
+                // Process the next adjacent node.
+                if (current.nextEdge < adj[current.node].size()) {
+                    int child = adj[current.node].get(
+                        current.nextEdge++
+                    );
+
+                    // Skip the parent and any previously visited node.
+                    if (visited[child]) {
+                        continue;
+                    }
+
+                    visited[child] = true;
+
+                    // Entry time of the child.
+                    tin[child] = ++timer;
+                    euler[timer] = child;
+
+                    stack.push(new Frame(child, current.node));
+
+                } else {
+                    // All descendants have been processed.
+                    // The current timer is the last position
+                    // belonging to this node's subtree.
+                    tout[current.node] = timer;
+
+                    stack.pop();
+                }
+            }
+
+            // Initialize the Fenwick Tree in Euler Tour order.
+            fenwick = new FenwickTree(n);
+
+            for (int position = 1; position <= n; position++) {
+                int node = euler[position];
+                fenwick.add(position, values[node]);
+            }
+        }
+
+        // Update the value of node s to x.
+        void updateNode(int s, long x) {
+            long delta = x - values[s];
+
+            // Update the corresponding Euler Tour position.
+            fenwick.add(tin[s], delta);
+
+            // Keep the original node value synchronized.
+            values[s] = x;
+        }
+
+        // Return the sum of the subtree rooted at s.
+        long querySubtreeSum(int s) {
+            return fenwick.rangeSum(tin[s], tout[s]);
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        FastScanner fs = new FastScanner(System.in);
+
+        int n = fs.nextInt();
+        int q = fs.nextInt();
+
+        // Node values are stored using 1-based indexing.
+        long[] values = new long[n + 1];
+
+        for (int i = 1; i <= n; i++) {
+            values[i] = fs.nextLong();
+        }
+
+        TreeQueries tree = new TreeQueries(n, values);
+
+        // Read the n - 1 edges.
+        for (int i = 0; i < n - 1; i++) {
+            int u = fs.nextInt();
+            int v = fs.nextInt();
+
+            tree.addEdge(u, v);
+        }
+
+        // The tree is rooted at node 1.
+        tree.buildEulerTour(1);
+
+        StringBuilder output = new StringBuilder();
+
+        // Process all queries.
+        for (int i = 0; i < q; i++) {
+            int type = fs.nextInt();
+            int s = fs.nextInt();
+
+            if (type == 1) {
+                long x = fs.nextLong();
+                tree.updateNode(s, x);
+
+            } else if (type == 2) {
+                output.append(tree.querySubtreeSum(s))
+                      .append('\n');
+            }
+        }
+
+        System.out.print(output);
+    }
+}

@@ -1,0 +1,270 @@
+
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    static InputReader in = new InputReader(System.in);
+    static PrintWriter out = new PrintWriter(System.out);
+
+    static ArrayList<Integer>[] child;
+
+    static int[] size, heavy, parent, depth;
+    static int[] head, pos, value;
+    static int timer;
+
+    static FenwickTree bit;
+
+    // Calculate subtree sizes and identify heavy children.
+    static void dfs(int u) {
+        size[u] = 1;
+        heavy[u] = -1;
+
+        int maxSize = 0;
+
+        for (int v : child[u]) {
+            if (v == parent[u]) {
+                continue;
+            }
+
+            parent[v] = u;
+            depth[v] = depth[u] + 1;
+
+            dfs(v);
+
+            size[u] += size[v];
+
+            if (size[v] > maxSize) {
+                maxSize = size[v];
+                heavy[u] = v;
+            }
+        }
+    }
+
+    // Decompose the tree into heavy chains.
+    static void decompose(int u, int h) {
+        head[u] = h;
+        pos[u] = ++timer;
+
+        if (heavy[u] != -1) {
+            decompose(heavy[u], h);
+        }
+
+        for (int v : child[u]) {
+            if (v == parent[u] || v == heavy[u]) {
+                continue;
+            }
+
+            decompose(v, v);
+        }
+    }
+
+    // Find the sum of values on the path from u to v.
+    static long queryPath(int u, int v) {
+        long ans = 0;
+
+        while (head[u] != head[v]) {
+
+            // Move the node whose chain head is deeper.
+            if (depth[head[u]] < depth[head[v]]) {
+                int temp = u;
+                u = v;
+                v = temp;
+            }
+
+            ans += bit.query(pos[head[u]], pos[u]);
+
+            u = parent[head[u]];
+        }
+
+        // Both nodes now belong to the same chain.
+        if (depth[u] > depth[v]) {
+            int temp = u;
+            u = v;
+            v = temp;
+        }
+
+        ans += bit.query(pos[u], pos[v]);
+
+        return ans;
+    }
+
+    // Update the value of a node.
+    static void update(int u, int newValue) {
+        int delta = newValue - value[u];
+
+        value[u] = newValue;
+        bit.update(pos[u], delta);
+    }
+
+    public static void solve() throws IOException {
+
+        int n = in.nextInt();
+        int q = in.nextInt();
+
+        value = new int[n + 1];
+
+        for (int i = 1; i <= n; i++) {
+            value[i] = in.nextInt();
+        }
+
+        child = new ArrayList[n + 1];
+
+        for (int i = 1; i <= n; i++) {
+            child[i] = new ArrayList<>();
+        }
+
+        // Read the n - 1 edges.
+        for (int i = 0; i < n - 1; i++) {
+            int u = in.nextInt();
+            int v = in.nextInt();
+
+            child[u].add(v);
+            child[v].add(u);
+        }
+
+        size = new int[n + 1];
+        heavy = new int[n + 1];
+        parent = new int[n + 1];
+        depth = new int[n + 1];
+
+        head = new int[n + 1];
+        pos = new int[n + 1];
+
+        parent[1] = 0;
+        depth[1] = 0;
+
+        // Step 1: Calculate subtree sizes and heavy children.
+        dfs(1);
+
+        timer = 0;
+
+        // Step 2: Assign chain heads and linearized positions.
+        decompose(1, 1);
+
+        // Step 3: Build the Fenwick Tree.
+        bit = new FenwickTree(n);
+
+        for (int u = 1; u <= n; u++) {
+            bit.update(pos[u], value[u]);
+        }
+
+        /*
+         * Query types:
+         *
+         * 1 u x : Update node u to value x.
+         * 2 u v : Find the sum along the path from u to v.
+         */
+        while (q-- > 0) {
+            int type = in.nextInt();
+
+            if (type == 1) {
+                int u = in.nextInt();
+                int x = in.nextInt();
+
+                update(u, x);
+
+            } else if (type == 2) {
+                int u = in.nextInt();
+                int v = in.nextInt();
+
+                out.println(queryPath(u, v));
+            }
+        }
+    }
+
+    // Fenwick Tree / Binary Indexed Tree.
+    static class FenwickTree {
+
+        int n;
+        long[] bit;
+
+        FenwickTree(int n) {
+            this.n = n;
+            bit = new long[n + 1];
+        }
+
+        void update(int idx, long delta) {
+            while (idx <= n) {
+                bit[idx] += delta;
+                idx += idx & -idx;
+            }
+        }
+
+        long prefixSum(int idx) {
+            long sum = 0;
+
+            while (idx > 0) {
+                sum += bit[idx];
+                idx -= idx & -idx;
+            }
+
+            return sum;
+        }
+
+        long query(int l, int r) {
+            return prefixSum(r) - prefixSum(l - 1);
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        solve();
+        out.flush();
+    }
+
+    // Fast input reader.
+    private static class InputReader implements AutoCloseable {
+
+        private final InputStream in;
+        private final byte[] buffer = new byte[1 << 16];
+
+        private int ptr = 0;
+        private int len = 0;
+
+        InputReader(InputStream in) {
+            this.in = in;
+        }
+
+        private int read() throws IOException {
+            if (ptr >= len) {
+                len = in.read(buffer);
+                ptr = 0;
+
+                if (len <= 0) {
+                    return -1;
+                }
+            }
+
+            return buffer[ptr++];
+        }
+
+        int nextInt() throws IOException {
+            int c;
+
+            do {
+                c = read();
+            } while (c <= ' ' && c != -1);
+
+            int sign = 1;
+
+            if (c == '-') {
+                sign = -1;
+                c = read();
+            }
+
+            int num = 0;
+
+            while (c > ' ') {
+                num = num * 10 + c - '0';
+                c = read();
+            }
+
+            return num * sign;
+        }
+
+        @Override
+        public void close() throws IOException {
+            in.close();
+        }
+    }
+}

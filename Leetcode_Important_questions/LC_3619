@@ -1,0 +1,30 @@
+class Solution {
+    long totalSum = 0L;
+    int dist[][];
+    public int countIslands(int[][] grid, int k) {
+        int ans = 0;
+        dist = new int[][]{{0,-1},{0,1},{1,0},{-1,0}};
+        for(int i = 0;i<grid.length;i++){
+            for(int j = 0;j<grid[0].length;j++){
+                if(grid[i][j]>0){
+                    totalSum = 0L;
+                    dfs(grid,i,j);
+                    if( totalSum!=0L && totalSum%k==0)ans++;
+                }
+            }
+        }
+        return ans;
+    }
+    public void dfs(int[][] grid,int i,int j){
+        totalSum+=(long)(grid[i][j]);
+        grid[i][j] = -1;
+        for(int d[]:dist){
+            int new_i = i+d[0];
+            int new_j = j+d[1];
+            if(new_i<0 || new_j<0 || new_i>=grid.length || new_j>=grid[0].length || grid[new_i][new_j]<=0){
+                continue;
+            }
+            dfs(grid,new_i,new_j);
+        }
+    }
+}

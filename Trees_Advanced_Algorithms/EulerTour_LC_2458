@@ -1,0 +1,70 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    int[] st, ed;          // entry / exit time of each node value
+    int[] tourDepth;       // depth of the node that occupies each tour position
+    int timer;
+
+    public int[] treeQueries(TreeNode root, int[] queries) {
+        int n = countNodes(root);
+        st = new int[n + 1];
+        ed = new int[n + 1];
+        tourDepth = new int[n + 1];   // 1-based tour positions
+        timer = 1;
+
+        // Build the Euler tour (pre-order) and record depths at tour positions
+        dfs(root, 0);
+
+        // Prefix / suffix maximum depth on the flattened tour
+        int[] prefixMax = new int[n + 2];
+        int[] suffixMax = new int[n + 2];
+        for (int i = 1; i <= n; i++) {
+            prefixMax[i] = Math.max(prefixMax[i - 1], tourDepth[i]);
+        }
+        for (int i = n; i >= 1; i--) {
+            suffixMax[i] = Math.max(suffixMax[i + 1], tourDepth[i]);
+        }
+
+        int[] ans = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            int v = queries[i];
+            int L = st[v], R = ed[v];
+            // max depth outside the contiguous range of the subtree
+            int maxOutside = Math.max(prefixMax[L - 1], suffixMax[R + 1]);
+            // height = number of edges = max depth (root depth 0)
+            ans[i] = maxOutside;
+        }
+        return ans;
+    }
+
+    private int countNodes(TreeNode node) {
+        if (node == null) return 0;
+        return 1 + countNodes(node.left) + countNodes(node.right);
+    }
+
+    // Pre-order Euler tour: each subtree occupies a contiguous segment [st, ed]
+    private void dfs(TreeNode node, int depth) {
+        if (node == null) return;
+        st[node.val] = timer;
+        tourDepth[timer] = depth;   // depth of this node at its tour position
+        timer++;
+
+        dfs(node.left, depth + 1);
+        dfs(node.right, depth + 1);
+
+        ed[node.val] = timer - 1;   // last position belonging to this subtree
+    }
+}

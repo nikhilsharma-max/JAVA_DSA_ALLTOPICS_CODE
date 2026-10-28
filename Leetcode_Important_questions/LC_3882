@@ -1,0 +1,89 @@
+# Solution 01: BY PQ -> This one gives TLE, so use solution 02
+class Solution {
+    public class Info implements Comparable<Info>{
+        int i;
+        int j;
+        int xor;
+        public Info(int i,int j, int xor){
+            this.i = i;
+            this.j = j;
+            this.xor = xor;
+        }
+        @Override
+        public int compareTo(Info i2){
+            return this.xor-i2.xor;
+        }
+    }
+    public int minCost(int[][] grid) {
+        PriorityQueue<Info> pq = new PriorityQueue<>();
+        pq.add(new Info(0,0,grid[0][0]));
+        int minAns = Integer.MAX_VALUE;
+        int dist[][] = new int[][]{{1,0},{0,1}};
+        int n = grid.length;
+        int m = grid[0].length;
+        while(!pq.isEmpty()){
+            Info curr = pq.remove();
+            if(curr.i==n-1 && curr.j==m-1){
+                minAns = Math.min(minAns,curr.xor);
+            }else{
+                for(int d[]:dist){
+                    int new_i = curr.i+d[0];
+                    int new_j = curr.j+d[1];
+                    if(new_i>=n || new_j>=m){
+                        continue;
+                    }else{
+                        pq.add(new Info(new_i,new_j,(curr.xor)^(grid[new_i][new_j])));
+                    }
+                }
+            }
+        }
+        return minAns;
+    }
+}
+
+
+
+# Solution 02
+class Solution {
+    public int minCost(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        
+        // dp[i][j] stores all possible XOR values reachable at cell (i, j)
+        Set<Integer>[][] dp = new HashSet[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                dp[i][j] = new HashSet<>();
+            }
+        }
+        
+        // Base case: start cell
+        dp[0][0].add(grid[0][0]);
+        
+        // Fill the DP table
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                // From top cell
+                if (i > 0) {
+                    for (int xor : dp[i - 1][j]) {
+                        dp[i][j].add(xor ^ grid[i][j]);
+                    }
+                }
+                // From left cell
+                if (j > 0) {
+                    for (int xor : dp[i][j - 1]) {
+                        dp[i][j].add(xor ^ grid[i][j]);
+                    }
+                }
+            }
+        }
+        
+        // Find the minimum XOR at the bottom-right cell
+        int minXor = Integer.MAX_VALUE;
+        for (int xor : dp[m - 1][n - 1]) {
+            minXor = Math.min(minXor, xor);
+        }
+        
+        return minXor;
+    }
+}

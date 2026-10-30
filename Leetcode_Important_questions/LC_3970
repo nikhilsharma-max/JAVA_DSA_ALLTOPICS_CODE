@@ -1,0 +1,70 @@
+class Solution {
+    public class Info implements Comparable<Info>{
+        int node;
+        int minDist;
+        int identicalTillNow;
+        public Info(int node,int minDist,int identicalTillNow){
+            this.node = node;
+            this.minDist = minDist;
+            this.identicalTillNow = identicalTillNow;
+        }
+
+        @Override
+        public int compareTo(Info i2){
+            return this.minDist - i2.minDist;
+        }
+    }
+    public int shortestPath(int n, int[][] edges, String labels, int k) {
+        List<int[]> adj[] = new ArrayList[n];
+        for(int i = 0;i<n;i++){
+            adj[i] = new ArrayList<>();
+        }
+        for(int ed[]:edges){
+            adj[ed[0]].add(new int[]{ed[1],ed[2]});
+        }
+        
+        // dist[node][count] = min distance to reach node ending with 'count' consecutive identical labels
+        int[][] dist = new int[n][k + 1];
+        for(int i = 0; i < n; i++){
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
+        }
+        
+        PriorityQueue<Info> pq = new PriorityQueue<>();
+        dist[0][1] = 0;
+        pq.add(new Info(0, 0, 1));
+        
+        while(!pq.isEmpty()){
+            Info curr = pq.remove();
+            int u = curr.node;
+            int d = curr.minDist;
+            int cnt = curr.identicalTillNow;
+            
+            // skip outdated state
+            if(d > dist[u][cnt]) continue;
+            
+            // early exit: first time we pop the destination is the shortest
+            if(u == n - 1) return d;
+            
+            List<int[]> list = adj[u];
+            if(list != null && list.size() != 0){
+                for(int ne[] : list){
+                    int v = ne[0];
+                    int w = ne[1];
+                    char prevChar = labels.charAt(u);
+                    char currChar = labels.charAt(v);
+                    int newIdenticalCount = 1;
+                    if(prevChar == currChar){
+                        newIdenticalCount = cnt + 1;
+                    }
+                    if(newIdenticalCount > k) continue;
+                    
+                    if(d + w < dist[v][newIdenticalCount]){
+                        dist[v][newIdenticalCount] = d + w;
+                        pq.add(new Info(v, dist[v][newIdenticalCount], newIdenticalCount));
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+}

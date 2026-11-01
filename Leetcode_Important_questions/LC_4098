@@ -1,0 +1,15 @@
+class Solution {
+    public long minimumMaxValue(int n, int index, int value) {
+        if(value==1)return -1;
+        int p = value;
+        for(int i = 2; i*i<=value;i++){
+            if(value%i == 0){
+                p = i;
+                break;
+            }
+        }
+        if(index>(value-p)/2)return -1;
+        if(index==n-1)return value;
+        return (long)value + (long)p + (long)((long)(2)*(long)(n-index-2));
+    }
+}

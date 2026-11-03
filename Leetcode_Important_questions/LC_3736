@@ -1,0 +1,10 @@
+class Solution {
+    public int minMoves(int[] nums) {
+        int max = Arrays.stream(nums).max().getAsInt();
+        int op = 0;
+        for(int num:nums){
+            op+=(num);
+        }
+        return (max*(nums.length)-op);
+    }
+}

@@ -1,0 +1,85 @@
+class Solution {
+    public long minOperations(int[] nums, int x, int k) {
+        List<Long> minOps = getMinOps(nums, x);
+        Long[][] memo = new Long[nums.length + 1][k + 1];
+        return dfs(0, k, x, minOps, memo);
+    }
+
+    private static final long INF = Long.MAX_VALUE / 2;
+
+    private long dfs(int i, int remain, int x, List<Long> minOps, Long[][] memo) {
+        if (remain == 0) return 0;
+        if (i >= minOps.size()) return INF;
+        if (memo[i][remain] != null) return memo[i][remain];
+
+        long skip = dfs(i + 1, remain, x, minOps, memo);
+        long take = minOps.get(i) + dfs(i + x, remain - 1, x, minOps, memo);
+        return memo[i][remain] = Math.min(skip, take);
+    }
+
+    private List<Long> getMinOps(int[] nums, int x) {
+        List<Long> minOps = new ArrayList<>();
+        TreeMap<Integer, Integer> lower = new TreeMap<>(); // max side
+        TreeMap<Integer, Integer> upper = new TreeMap<>(); // min side
+        long lowerSum = 0, upperSum = 0;
+        int lowerSize = 0, upperSize = 0;
+
+        for (int i = 0; i < nums.length; i++) {
+            // insert
+            if (lowerSize == 0 || nums[i] <= lower.lastKey()) {
+                lower.merge(nums[i], 1, Integer::sum);
+                lowerSum += nums[i];
+                lowerSize++;
+            } else {
+                upper.merge(nums[i], 1, Integer::sum);
+                upperSum += nums[i];
+                upperSize++;
+            }
+
+            // remove outgoing element
+            if (i >= x) {
+                int out = nums[i - x];
+                if (lower.containsKey(out)) {
+                    lower.merge(out, -1, Integer::sum);
+                    if (lower.get(out) == 0) lower.remove(out);
+                    lowerSum -= out;
+                    lowerSize--;
+                } else {
+                    upper.merge(out, -1, Integer::sum);
+                    if (upper.get(out) == 0) upper.remove(out);
+                    upperSum -= out;
+                    upperSize--;
+                }
+            }
+
+            // rebalance
+            if (lowerSize < upperSize) {
+                int val = upper.firstKey();
+                upper.merge(val, -1, Integer::sum);
+                if (upper.get(val) == 0) upper.remove(val);
+                lower.merge(val, 1, Integer::sum);
+                upperSum -= val;
+                lowerSum += val;
+                upperSize--;
+                lowerSize++;
+            } else if (lowerSize > upperSize + 1) {
+                int val = lower.lastKey();
+                lower.merge(val, -1, Integer::sum);
+                if (lower.get(val) == 0) lower.remove(val);
+                upper.merge(val, 1, Integer::sum);
+                lowerSum -= val;
+                upperSum += val;
+                lowerSize--;
+                upperSize++;
+            }
+
+            if (i >= x - 1) {
+                int median = lower.lastKey();
+                long ops = median * (long) lowerSize - lowerSum
+                         + upperSum - median * (long) upperSize;
+                minOps.add(ops);
+            }
+        }
+        return minOps;
+    }
+}

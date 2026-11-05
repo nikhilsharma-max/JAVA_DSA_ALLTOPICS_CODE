@@ -1,0 +1,39 @@
+class Solution {
+    public ArrayList<Integer> bellmanFord(int V, int[][] edges, int src) {
+        // code here
+        int dist[] = new int[V];
+        Arrays.fill(dist,100_000_000);
+        dist[src] = 0;
+        for(int i = 0;i<V-1;i++){
+            for(int ed[]:edges){
+                int u = ed[0];
+                int v = ed[1];
+                int wt = ed[2];
+                if(dist[u]==100_000_000)continue;
+                if(dist[u]+wt<dist[v]){
+                    dist[v] = dist[u]+wt;
+                }
+            }
+        }
+        boolean hasNegCycle = false;
+        for(int ed[]:edges){
+            int u = ed[0];
+            int v = ed[1];
+            int wt = ed[2];
+            if(dist[u]==100_000_000)continue;
+            if(dist[u]+wt<dist[v]){
+                hasNegCycle = true;
+            }
+        }
+        ArrayList<Integer> result = new ArrayList<>();
+        if(hasNegCycle){
+            result.add(-1);
+            return result;
+        }
+        
+        for(int i = 0;i<dist.length;i++){
+            result.add(dist[i]);
+        }
+        return result;
+    }
+}

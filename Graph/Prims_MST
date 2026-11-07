@@ -1,0 +1,35 @@
+class Solution {
+    public class Pair implements Comparable<Pair>{
+        int node;
+        int wt;
+        public Pair(int node,int wt){
+            this.node = node;
+            this.wt = wt;
+        }
+        @Override
+        public int compareTo(Pair p2){
+            return this.wt-p2.wt;
+        }
+    }
+    public int primMST(ArrayList<ArrayList<ArrayList<Integer>>> adj) {
+        // code here
+        int sum = 0;
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+        pq.add(new Pair(0,0));
+        int V = adj.size();
+        boolean vis[] = new boolean[V];
+        while(!pq.isEmpty()){
+            Pair curr = pq.remove();
+            if(vis[curr.node])continue;
+            sum+=curr.wt;
+            vis[curr.node] = true;
+            ArrayList<ArrayList<Integer>> neigh = adj.get(curr.node);
+            if(neigh!=null && neigh.size()!=0)
+            for(ArrayList<Integer> ne:neigh){
+                if(vis[ne.get(0)])continue;
+                pq.add(new Pair(ne.get(0),ne.get(1)));
+            }
+        }
+        return sum;
+    }
+}

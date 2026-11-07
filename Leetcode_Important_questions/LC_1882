@@ -1,0 +1,60 @@
+class Solution {
+    public class Free implements Comparable<Free>{
+        int wt;
+        int idx;
+        public Free(int wt,int idx){
+            this.wt = wt;
+            this.idx = idx;
+        }
+        @Override
+        public int compareTo(Free f2){
+            if(this.wt==f2.wt)return this.idx-f2.idx;
+            return this.wt-f2.wt;
+        }
+    }
+    public class Busy implements Comparable<Busy>{
+        int freeTime;
+        int wt;
+        int idx;
+        public Busy(int freeTime,int wt,int idx){
+            this.freeTime = freeTime;
+            this.wt = wt;
+            this.idx = idx;
+        }
+        @Override
+        public int compareTo(Busy b2){
+            if((this.freeTime == b2.freeTime) && (this.wt==b2.wt)){
+                return this.idx-b2.idx;
+            }else if(this.freeTime==b2.freeTime){
+                return this.wt-b2.wt;
+            }
+            return this.freeTime-b2.freeTime;
+        }
+    }
+
+
+    public int[] assignTasks(int[] servers, int[] tasks) {
+        PriorityQueue<Free> free = new PriorityQueue<>();
+        PriorityQueue<Busy> busy = new PriorityQueue<>();
+        for(int i = 0;i<servers.length;i++){
+            free.add(new Free(servers[i],i));
+        }
+        int result[] = new int[tasks.length];
+        for(int i = 0;i<tasks.length;i++){
+            while((!busy.isEmpty()) && (busy.peek().freeTime <= i)){
+                Busy b = busy.remove();
+                free.add(new Free(b.wt,b.idx));
+            }
+            if(free.isEmpty()){
+                Busy b = busy.remove();
+                result[i] = b.idx;
+                busy.add(new Busy(b.freeTime+tasks[i],b.wt,b.idx));
+            }else{
+                Free f = free.remove();
+                result[i] = f.idx;
+                busy.add(new Busy(i+tasks[i],f.wt,f.idx));
+            }
+        }
+        return result;
+    }
+}

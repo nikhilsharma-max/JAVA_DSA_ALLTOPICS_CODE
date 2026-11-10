@@ -1,0 +1,19 @@
+class Solution {
+    int dp[];
+    public int climbStairs(int n, int[] costs) {
+        dp = new int[n+1];
+        Arrays.fill(dp,-1);
+        return fun(0,n,costs);
+    }
+    public int fun(int i,int n,int costs[]){
+        if(i==n)return 0;
+        if(i>n)return 10_000_00;
+        if(dp[i]!=-1)return dp[i];
+        int cost = Integer.MAX_VALUE;
+        for(int j = 1;j<4;j++){
+            if(i+j<=n)
+                cost = Math.min(cost,fun(i+j,n,costs)+ (costs[i+j-1]+j*j));
+        }
+        return dp[i] = cost;
+    }
+}   

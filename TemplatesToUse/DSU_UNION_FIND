@@ -1,0 +1,32 @@
+public class DisjointSetUnion{
+    int parent[],rank[];
+    public DisjointSetUnion(int n){
+        parent = new int[n+1];//n+1 will work for both 0-based and 1-based indexing
+        rank = new int[n+1];
+        for(int i = 0;i<n+1;i++){
+            parent[i] = i;
+        }
+    }
+    
+    public int findParent(int u){
+        if(u==parent[u])return u;
+        return parent[u] = findParent(parent[u]);//with path compression
+    }
+
+    public void union(int u,int v){
+        int pu = findParent[u];
+        int pv = findParent[v];
+        if(pu==pv)return;
+        int ru = rank[pu];
+        int rv = rank[pv];
+        if(ru<rv){
+            parent[pu] = pv;
+        }else if(ru>rv){
+            parent[pv] = pu;
+        }else{
+            parent[pv] = pu;
+            rank[pu]++;
+        }
+    }
+
+}

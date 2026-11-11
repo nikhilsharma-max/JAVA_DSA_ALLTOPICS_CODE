@@ -1,0 +1,59 @@
+class Solution {
+    public int countSCC(ArrayList<ArrayList<Integer>> adj) {
+        // code here
+        int V = adj.size();
+        Stack<Integer> order = new Stack<>();
+        boolean vis[] = new boolean[V];
+        for(int i = 0;i<V;i++){
+            if(!vis[i]){
+                dfsFill(vis,i,adj,order);
+            }
+        }
+        vis = new boolean[V];
+        //reverse the edges
+        ArrayList<ArrayList<Integer>> revAdj = new ArrayList<>();
+        for(int i = 0;i<V;i++){
+            revAdj.add(new ArrayList<>());
+        }
+        for(int i = 0;i<V;i++){
+            ArrayList<Integer> neigh = adj.get(i);
+            if(neigh!=null && neigh.size()!=0)
+            for(int ne:neigh){
+                revAdj.get(ne).add(i);
+            }
+        }
+        //dfs on reversedEdge using order stack
+        int sccNumber = 0;
+        while(!order.isEmpty()){
+            int curr = order.pop();
+            if(vis[curr])continue;
+            sccNumber++;
+            dfs(curr,vis,revAdj);
+        }
+        return sccNumber;
+    }
+    
+    
+    public void dfs(int curr,boolean vis[],ArrayList<ArrayList<Integer>> revAdj){
+        vis[curr] = true;
+        ArrayList<Integer> neigh = revAdj.get(curr);
+        if(neigh!=null && neigh.size() !=0)
+        for(int ne:neigh){
+            if(!vis[ne]){
+                dfs(ne,vis,revAdj);
+            }
+        }
+    }
+    
+    public void dfsFill(boolean vis[],int curr,ArrayList<ArrayList<Integer>> adj,Stack<Integer> order){
+        vis[curr]  = true;
+        ArrayList<Integer> neigh = adj.get(curr);
+        if(neigh!=null && neigh.size() !=0)
+        for(int ne:neigh){
+            if(!vis[ne]){
+                dfsFill(vis,ne,adj,order);
+            }
+        }
+        order.push(curr);
+    }
+}

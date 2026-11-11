@@ -1,0 +1,21 @@
+class Solution {
+    public long minimumCost(int cost1, int cost2, int costBoth, int need1, int need2) {
+        long minCost = (long)Math.min(costBoth,cost1+cost2);
+        long ans = 0L;
+        long minVal = (long)Math.min(need1,need2);
+        ans = minVal*minCost;
+        need1 -= minVal;
+        need2 -= minVal;
+        long cost = Math.min(minCost,cost1);
+        if(need1>0){
+            ans+=((long)(need1))*cost;
+            need1 = 0;
+        }
+        long newCost = Math.min(minCost,cost2);
+        if(need2>0){
+            ans+=((long)(need2))*newCost;
+            need2 = 0;           
+        }
+        return ans;
+    }
+}

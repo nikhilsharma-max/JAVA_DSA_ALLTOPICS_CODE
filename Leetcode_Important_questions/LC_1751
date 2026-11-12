@@ -1,0 +1,31 @@
+class Solution {
+    int dp[][];
+    public int maxValue(int[][] events, int k) {
+        dp = new int[events.length+1][k+1];
+        for(int d[]:dp)Arrays.fill(d,-1);
+        Arrays.sort(events,(a,b)->Integer.compare(a[0],b[0]));
+        return findMaxVal(0,events,k);
+    }
+    public int findMaxVal(int i,int events[][],int k){
+        if(i>=events.length || k<=0)return 0;
+        if(dp[i][k]!=-1)return dp[i][k];
+        int val = 0;
+        //leave the current event
+        val = Math.max(val,findMaxVal(i+1,events,k));
+        int j = getNextGreaterIdx(events[i][1],events);
+        val = Math.max(val,events[i][2]+findMaxVal(j,events,k-1));
+        return dp[i][k]=val;
+    }
+    public int getNextGreaterIdx(int val, int[][] events) {
+        int lo = 0, hi = events.length;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (events[mid][0] > val) {
+                hi = mid;          // possible answer, try earlier
+            } else {
+                lo = mid + 1;
+            }
+        }
+        return lo;                 // first index with start > val, or n
+    }
+}

@@ -1,0 +1,74 @@
+import java.util.*;
+
+class Solution {
+    private int[] peopleMask;
+    private int fullMask;
+    private int n;
+    private List<Integer>[][] memo;   // memo[i][mask] = best team starting from person i with current mask
+
+    public int[] smallestSufficientTeam(String[] req_skills, List<List<String>> people) {
+        int m = req_skills.length;
+        n = people.size();
+        fullMask = (1 << m) - 1;
+
+        // Map skill → bit position
+        Map<String, Integer> skillToBit = new HashMap<>();
+        for (int i = 0; i < m; i++) {
+            skillToBit.put(req_skills[i], i);
+        }
+
+        // Pre-compute each person's skill mask
+        peopleMask = new int[n];
+        for (int i = 0; i < n; i++) {
+            for (String skill : people.get(i)) {
+                peopleMask[i] |= 1 << skillToBit.get(skill);
+            }
+        }
+
+        // Memoization table
+        memo = new ArrayList[n + 1][1 << m];
+
+        List<Integer> best = dp(0, 0);
+
+        // Convert List → int[]
+        int[] ans = new int[best.size()];
+        for (int i = 0; i < best.size(); i++) {
+            ans[i] = best.get(i);
+        }
+        return ans;
+    }
+
+    private List<Integer> dp(int i, int mask) {
+        if (mask == fullMask) {
+            return new ArrayList<>();               // already covered everything
+        }
+        if (i == n) {
+            // Impossible – return a huge sentinel list
+            List<Integer> huge = new ArrayList<>();
+            for (int k = 0; k < 100; k++) huge.add(-1);
+            return huge;
+        }
+
+        if (memo[i][mask] != null) {
+            return memo[i][mask];
+        }
+
+        // Option 1: skip person i
+        List<Integer> best = dp(i + 1, mask);
+
+        // Option 2: take person i
+        int newMask = mask | peopleMask[i];
+        if (newMask != mask) {                      // only if the person adds new skills
+            List<Integer> take = new ArrayList<>();
+            take.add(i);
+            take.addAll(dp(i + 1, newMask));
+
+            if (take.size() < best.size()) {
+                best = take;
+            }
+        }
+
+        memo[i][mask] = best;
+        return best;
+    }
+}

@@ -1,0 +1,39 @@
+class Solution {
+    public long countNonDecreasingSubarrays(int[] nums, int k) {
+        int n = nums.length;
+        // reverse so that we can process left-to-right while the
+        // “running max” is actually a decreasing sequence in the deque
+        for (int i = 0, j = n - 1; i < j; ++i, --j) {
+            int tmp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = tmp;
+        }
+
+        long ans = 0;
+        long cost = 0;                     // current cost of window [left, right]
+        Deque<int[]> dq = new ArrayDeque<>(); // pairs (value, consecutive-count)
+
+        for (int right = 0, left = 0; right < n; ++right) {
+            int cnt = 1;
+            // absorb all smaller-or-equal values; they become part of the new plateau
+            while (!dq.isEmpty() && dq.peekLast()[0] <= nums[right]) {
+                int[] last = dq.pollLast();
+                cnt += last[1];
+                cost += (long) (nums[right] - last[0]) * last[1];
+            }
+            dq.offerLast(new int[]{nums[right], cnt});
+
+            // shrink from the left while cost exceeds k
+            while (cost > k) {
+                int[] first = dq.peekFirst();
+                cost -= first[0] - nums[left];
+                if (--first[1] == 0) {
+                    dq.pollFirst();
+                }
+                ++left;
+            }
+            ans += right - left + 1;
+        }
+        return ans;
+    }
+}

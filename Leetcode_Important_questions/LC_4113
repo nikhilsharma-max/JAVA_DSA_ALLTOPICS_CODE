@@ -1,0 +1,53 @@
+class Solution {
+    Long dp[][];
+    public long maxDifference(int[] nums) {
+        long totalScore = 0L;
+        for(int i = 0;i<nums.length;i++){
+            totalScore += (long)nums[i];
+        }
+        dp = new Long[nums.length+1][2];
+        for(Long d[]:dp)Arrays.fill(d,-1L);
+        long aliceScore = getAliceScore(0,nums,true);
+        long bobScore = totalScore-aliceScore;
+        return aliceScore-bobScore;
+    }
+
+    public long getAliceScore(int i, int[] nums,boolean alice){
+        if(i>=nums.length)return 0L;
+        int val = alice?1:0;
+        if(dp[i][val]!=-1L)return dp[i][val];
+        //Single leftmost ki choice hmesha hai
+        long ans = 0L;
+        //taking single leftmost element
+        if(nums[i]%3==0){
+            if(alice){
+                ans = Math.max(ans,nums[i]+getAliceScore(i+1,nums,!alice));
+            }else{
+                ans = Math.max(ans,getAliceScore(i+1,nums,!alice));
+            }
+        }else{
+            if(alice){
+                ans = Math.max(ans,nums[i]+getAliceScore(i+1,nums,alice));
+            }else{
+                ans = Math.max(ans,getAliceScore(i+1,nums,alice));
+            }
+        }
+        //taking 2 leftmost elements
+        if(nums.length-i>=2){
+            if((nums[i]+nums[i+1])%3==0){
+                if(alice){
+                    ans = Math.max(ans,(nums[i]+nums[i+1])+getAliceScore(i+2,nums,!alice));
+                }else{
+                    ans = Math.min(ans,getAliceScore(i+2,nums,!alice));
+                }
+            }else{
+                if(alice){
+                    ans = Math.max(ans,(nums[i]+nums[i+1])+getAliceScore(i+2,nums,alice));
+                }else{
+                    ans = Math.min(ans,getAliceScore(i+2,nums,alice));
+                }
+            }           
+        }
+        return dp[i][val]=ans;
+    }
+}

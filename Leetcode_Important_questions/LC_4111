@@ -1,0 +1,23 @@
+class Solution {
+    public int countConsistent(int[] nums) {
+        int n = nums.length;
+        int ans = 0;
+        for(int i = 0;i<n;i++){
+            int and = nums[i];
+            int min = Integer.MAX_VALUE;
+            for(int j = i;j<n;j++){
+                for(int k = i;k<=j;k++){
+                    min = Math.min(min,nums[k]);
+                    and = (and&nums[k]);
+                }
+                if(and==min){
+                    ans++;
+                }
+                min = Integer.MAX_VALUE;
+                and = nums[i];
+            }
+            if(and==min)ans++;
+        }
+        return ans;
+    }
+}

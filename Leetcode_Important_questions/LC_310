@@ -1,0 +1,59 @@
+class Solution {
+    public List<Integer> findMinHeightTrees(int n, int[][] edges) {
+        // Edge cases
+        if (n == 1) {
+            return List.of(0);
+        }
+        if (n == 2) {
+            return List.of(0, 1);
+        }
+
+        // Build adjacency list and degree array
+        List<List<Integer>> graph = new ArrayList<>();
+        int[] degree = new int[n];
+        
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+        
+        for (int[] edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            graph.get(u).add(v);
+            graph.get(v).add(u);
+            degree[u]++;
+            degree[v]++;
+        }
+
+        // Initialize queue with all leaves (degree == 1)
+        Queue<Integer> leaves = new LinkedList<>();
+        for (int i = 0; i < n; i++) {
+            if (degree[i] == 1) {
+                leaves.offer(i);
+            }
+        }
+
+        int remainingNodes = n;
+
+        // Keep removing leaves layer by layer until ≤ 2 nodes left
+        while (remainingNodes > 2) {
+            int size = leaves.size();
+            remainingNodes -= size;
+
+            for (int i = 0; i < size; i++) {
+                int leaf = leaves.poll();
+                
+                // Decrease degree of neighbors
+                for (int neighbor : graph.get(leaf)) {
+                    degree[neighbor]--;
+                    if (degree[neighbor] == 1) {
+                        leaves.offer(neighbor);
+                    }
+                }
+            }
+        }
+
+        // The remaining nodes in the queue are the MHT roots
+        return new ArrayList<>(leaves);
+    }
+}

@@ -12,21 +12,6 @@ class Solution {
     public ListNode deleteMiddle(ListNode head) {
         if(head==null || head.next == null)return null;
         int len = 0;
-        // ListNode temp = head;
-        // while(temp!=null){
-        //     len++;
-        //     temp = temp.next;
-        // }
-        // if(len==2){
-        //     head.next = null;
-        //     return head;
-        // }
-        // temp = head;
-        // for(int i = 0;i<len/2-1;i++){
-        //     temp = temp.next;
-        // }
-        // temp.next = temp.next.next;
-        // return head;
         ListNode slow = new ListNode(-1);
         slow.next = head;
         ListNode fast = head;
@@ -35,6 +20,36 @@ class Solution {
             slow = slow.next;
         }
         slow.next = slow.next.next;
+        return head;
+    }
+}
+
+
+//Solution 02 (17-Nov-2026)
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode deleteMiddle(ListNode head) {
+        if(head==null || head.next==null)return null;
+        ListNode slow = head;
+        ListNode fast = head;
+        while(fast!=null && fast.next!=null){
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        ListNode prev = head;
+        while(prev.next!=slow){
+            prev = prev.next;
+        }
+        prev.next = prev.next.next;
         return head;
     }
 }

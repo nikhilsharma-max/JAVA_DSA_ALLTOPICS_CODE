@@ -1,0 +1,85 @@
+// Method 1 By Reservoir Sampling
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+
+    ListNode Head;
+    public Solution(ListNode head) {
+       Head = head;
+
+    }
+    
+    public int getRandom() {
+        Random rand = new Random();
+        int count = 1;
+        int result = 0;
+        ListNode temp = Head;
+        while(temp!=null){
+            if(rand.nextInt(count) < (1.0)/count){
+                result = temp.val;
+            }
+            count++;
+            temp = temp.next;
+        }
+        return result;
+    }
+}
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution obj = new Solution(head);
+ * int param_1 = obj.getRandom();
+ */
+
+
+
+//Method 2 Using random integer generator function
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+
+    ListNode arr[];
+    int len;
+    public Solution(ListNode head) {
+       ListNode temp = head;
+       len = 0;
+       while(temp!=null){
+        len++;
+        temp = temp.next;
+       } 
+       temp = head;
+       arr = new ListNode[len];
+        for(int i = 0;i<len;i++){
+            arr[i] = temp;
+            temp = temp.next;
+        }
+    }
+    
+    public int getRandom() {
+        Random rand = new Random();
+        int val = rand.nextInt(len);
+        return arr[val].val;
+    }
+}
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution obj = new Solution(head);
+ * int param_1 = obj.getRandom();
+ */

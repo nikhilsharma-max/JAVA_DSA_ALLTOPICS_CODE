@@ -1,0 +1,44 @@
+class Solution {
+    private List<Integer>[] children;
+    private char[] chars;
+    private int[] ans;
+    private int[] lastSeen;   // lastSeen[c] = most recent ancestor with character c
+
+    public int[] findSubtreeSizes(int[] parent, String s) {
+        int n = parent.length;
+        chars = s.toCharArray();
+        children = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            children[i] = new ArrayList<>();
+        }
+        for (int i = 1; i < n; i++) {
+            children[parent[i]].add(i);
+        }
+
+        ans = new int[n];
+        lastSeen = new int[26];
+        Arrays.fill(lastSeen, -1);
+
+        dfs(0, -1);
+        return ans;
+    }
+
+    private void dfs(int u, int parent) {
+        int c = chars[u] - 'a';
+        int prev = lastSeen[c];          // closest ancestor with same character (or -1)
+        lastSeen[c] = u;                 // current node becomes the newest occurrence
+
+        ans[u] = 1;
+        for (int v : children[u]) {
+            dfs(v, u);
+        }
+
+        // After processing the whole subtree, decide where this subtree size should be added
+        if (u != 0) {
+            int newParent = (prev != -1) ? prev : parent;
+            ans[newParent] += ans[u];
+        }
+
+        lastSeen[c] = prev;              // backtrack
+    }
+}
